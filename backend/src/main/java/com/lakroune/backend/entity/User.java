@@ -3,12 +3,18 @@ package com.lakroune.backend.entity;
 import com.lakroune.backend.enums.UserRole;
 import com.lakroune.backend.enums.UserStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id
