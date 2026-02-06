@@ -4,13 +4,14 @@ import com.lakroune.backend.enums.VerificationStatus;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 public class Profile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     private String cin;
     private Date dateNaissance;

@@ -4,13 +4,14 @@ import com.lakroune.backend.enums.EnterpriseStatus;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 public class Enterprise {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     private String nom;
     private String email;
