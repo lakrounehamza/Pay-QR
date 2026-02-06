@@ -1,4 +1,23 @@
 package com.lakroune.backend.entity;
 
+import com.lakroune.backend.enums.OwnerType;
+import jakarta.persistence.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Entity
 public class QrCode {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
+    @Enumerated(EnumType.STRING)
+    private OwnerType ownerType;
+
+    private BigDecimal solde;
+    private LocalDateTime dateExpiration;
+    private Boolean isUsed;
+    private String createdAt;
 }
