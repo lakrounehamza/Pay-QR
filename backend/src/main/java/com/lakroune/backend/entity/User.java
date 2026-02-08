@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -50,6 +51,19 @@ public class User {
     @ManyToOne
     private Enterprise enterprise;
 
-    private Date createdAt;
-    private Date updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+
+    @PrePersist
+    private void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+        status = UserStatus.ACTIVE;
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
