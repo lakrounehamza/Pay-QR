@@ -31,6 +31,7 @@ public class AuthServiceImpl implements IAuthService {
     private UserMapper userMapper;
     private JwtUtil jwtUtil;
     private final TokenBlacklistService tokenBlacklistService;
+    private EmailService emailService;
 
     @Override
     public LoginResponse login(LoginRequest request) {
@@ -54,6 +55,8 @@ public class AuthServiceImpl implements IAuthService {
         }
         user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
         User userSaved = userRepository.save(user);
+        emailService.sendEmail(user.getEmail(), "Test Mail", "Hello from Pay-QR!");
+
         return userMapper.toResponse(userSaved);
     }
     @Override
