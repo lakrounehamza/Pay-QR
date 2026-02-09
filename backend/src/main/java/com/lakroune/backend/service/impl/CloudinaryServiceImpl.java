@@ -5,6 +5,7 @@ package com.lakroune.backend.service.impl;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.lakroune.backend.dto.response.CloudinaryResponse;
+import com.lakroune.backend.service.ICloudinaryService;
 import com.lakroune.backend.util.FileUploadUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 @Service
 @AllArgsConstructor
-public class CloudinaryService {
+public class CloudinaryServiceImpl implements ICloudinaryService {
 
     private final Cloudinary cloudinary;
 
@@ -42,8 +43,8 @@ public class CloudinaryService {
                             "public_id", fileName,
                             "folder", isPdf ? "documents" : "images",
                             "resource_type", isPdf ? "raw" : "image",
-                            "type", "upload",          //  important
-                            "access_mode", "public"    //  solution 401   pour pdf
+                            "type", "upload",          
+                            "access_mode", "public"    
                     )
             );
             return  new CloudinaryResponse(uploadResult.get("public_id").toString()
