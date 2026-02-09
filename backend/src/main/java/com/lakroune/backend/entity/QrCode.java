@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lakroune.backend.enums.OwnerType;
+import lombok.ToString;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,21 +26,24 @@ public class QrCode {
     private UUID id;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(50)")
     private OwnerType ownerType;
 
-    private BigDecimal solde;
+    private BigDecimal amount;
     private LocalDateTime dateExpiration;
     private Boolean isUsed;
     private String createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "account_id")
+    @JsonIgnore
+    @ToString.Exclude
+    private Account account;
 
     @PrePersist
-    @SuppressWarnings("unused")
     private void onCreate() {
         createdAt = LocalDateTime.now().toString();
         if (isUsed == null) isUsed = false;
+        dateExpiration = LocalDateTime.now().plusMinutes(2);
     }
 }

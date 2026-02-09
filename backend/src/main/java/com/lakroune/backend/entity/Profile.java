@@ -1,11 +1,14 @@
 package com.lakroune.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.lakroune.backend.enums.VerificationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.Date;
 import java.util.UUID;
@@ -27,9 +30,12 @@ public class Profile {
     private String documentImageUrl;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(50)")
     private VerificationStatus verificationStatus;
 
     @OneToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
+    @ToString.Exclude
     private User user;
 }

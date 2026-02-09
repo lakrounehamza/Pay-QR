@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lakroune.backend.enums.UserRole;
 import com.lakroune.backend.enums.UserStatus;
 
@@ -13,6 +14,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "users")
@@ -28,30 +30,45 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    private String nom;
+    private String prenom;
+
     @Column(unique = true)
     private String telephone;
 
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(50)")
     private UserRole role;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(50)")
     private UserStatus status;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @ToString.Exclude
     private Profile profile;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Account> accounts;
+    @OneToOne
+    @JsonIgnore
+    @ToString.Exclude
+    private Account account;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @ToString.Exclude
     private List<OtpCode> otpCodes;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @ToString.Exclude
     private List<LoginHistory> loginHistories;
 
     @ManyToOne
+    @JsonIgnore
+    @ToString.Exclude
     private Enterprise enterprise;
 
     private LocalDateTime createdAt;

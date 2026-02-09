@@ -1,10 +1,13 @@
 package com.lakroune.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -25,5 +28,7 @@ public class LoginHistory {
     private LocalDateTime createdAt;
 
     @ManyToOne
+    @JsonIgnore
+    @ToString.Exclude
     private User user;
 }

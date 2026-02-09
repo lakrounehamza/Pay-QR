@@ -23,6 +23,7 @@ public class TicketPaiement {
     private UUID id;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(50)")
     private OwnerType ownerType;
 
     private BigDecimal solde;

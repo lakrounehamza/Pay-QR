@@ -24,11 +24,13 @@ public class Operation {
     private UUID id;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(50)")
     private OperationType type;
 
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(50)")
     private OperationStatus status;
 
     @ManyToOne
