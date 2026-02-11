@@ -1,6 +1,10 @@
 package com.lakroune.backend.enums;
 
 public enum OperationType {
-    TRANSFER, PAYMENT
+    TRANSFER,
+    PAYMENT,
+    CHARGE,
+    WITHDRAWAL,
+    DEPOSIT     
 }
 
