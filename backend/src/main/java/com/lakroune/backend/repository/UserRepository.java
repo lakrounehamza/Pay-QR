@@ -1,12 +1,18 @@
 package com.lakroune.backend.repository;
 
-import com.lakroune.backend.entity.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.lakroune.backend.entity.User;
+import com.lakroune.backend.enums.UserRole;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
+    Optional<User> findByTelephone(String telephone);
+    List<User> findByEnterprise_Id(UUID enterpriseId);
+    Optional<User> findByEnterprise_IdAndRole(UUID enterpriseId, UserRole role);
 }
