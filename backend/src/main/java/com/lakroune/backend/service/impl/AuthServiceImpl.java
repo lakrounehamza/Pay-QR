@@ -13,6 +13,7 @@ import com.lakroune.backend.dto.request.RegisterRequest;
 import com.lakroune.backend.dto.response.LoginResponse;
 import com.lakroune.backend.dto.response.UserResponse;
 import com.lakroune.backend.entity.User;
+import com.lakroune.backend.enums.UserStatus;
 import com.lakroune.backend.exception.ConflictException;
 import com.lakroune.backend.exception.NotFoundException;
 import com.lakroune.backend.exception.UnauthorizedException;
@@ -20,6 +21,7 @@ import com.lakroune.backend.mapper.UserMapper;
 import com.lakroune.backend.repository.UserRepository;
 import com.lakroune.backend.security.JwtUtil;
 import com.lakroune.backend.security.TokenBlacklistService;
+import com.lakroune.backend.service.IAccountService;
 import com.lakroune.backend.service.IAuthService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +36,7 @@ public class AuthServiceImpl implements IAuthService {
     private JwtUtil jwtUtil;
     private final TokenBlacklistService tokenBlacklistService;
     private EmailService emailService;
+    private final IAccountService accountService;
 
     @Override
     public LoginResponse login(LoginRequest request) {
@@ -41,6 +44,9 @@ public class AuthServiceImpl implements IAuthService {
         if (!user.isPresent())
             throw new NotFoundException("Email introuvable.");
         User user1 = user.get();
+        if (user1.getStatus() != UserStatus.ACTIVE) {
+            throw new UnauthorizedException("Votre compte est désactivé.");
+        }
         if (!passwordEncoder.matches(request.password(), user.get().getPassword())) {
             throw new UnauthorizedException("Mot de passe incorrect.");
         }
@@ -57,7 +63,9 @@ public class AuthServiceImpl implements IAuthService {
         }
         user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
         User userSaved = userRepository.save(user);
-        emailService.sendEmail(user.getEmail(), "Test Mail", "Hello from Pay-QR!");
+        
+        accountService.save(userSaved.getId());
+      
 
         return userMapper.toResponse(userSaved);
     }
