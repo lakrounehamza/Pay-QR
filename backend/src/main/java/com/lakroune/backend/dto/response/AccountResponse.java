@@ -1,6 +1,5 @@
 package com.lakroune.backend.dto.response;
 
-import com.lakroune.backend.entity.User;
 import com.lakroune.backend.enums.CompteStatus;
 import com.lakroune.backend.enums.OwnerType;
 
@@ -14,7 +13,7 @@ public record AccountResponse(
         OwnerType ownerType,
         BigDecimal solde,
         CompteStatus status,
-        User user,
+        UserResponse user,
         LocalDateTime createdAt
 ) {
 }

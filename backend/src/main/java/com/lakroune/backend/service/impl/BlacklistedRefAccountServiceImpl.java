@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BlacklistedRefAccountServiceImpl  implements IBlacklistedRefAccountService {
 
-    private BlacklistedRefAccountRepository blacklistedRefAccountRepository ;
+    private final BlacklistedRefAccountRepository blacklistedRefAccountRepository ;
 
     @Override
     public String addReferenceAccount() {
