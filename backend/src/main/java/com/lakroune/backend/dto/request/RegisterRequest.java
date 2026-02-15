@@ -17,7 +17,10 @@ public record RegisterRequest (
                 message = "Invalid telephone number"
         )
         String telephone,
-
+        @NotBlank(message = "nom is required")
+        String nom,
+        @NotBlank(message = "prenom is required")
+        String  prenom,
         @NotBlank(message = "Password is required")
         String password,
 
