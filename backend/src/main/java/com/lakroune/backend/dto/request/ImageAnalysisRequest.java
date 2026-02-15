@@ -4,6 +4,5 @@ import jakarta.validation.constraints.NotBlank;
 
 public record ImageAnalysisRequest (
     @NotBlank(message = "imageUrl is required")
-     String imageUrl,
-     String customPrompt
+     String imageUrl
 ){}

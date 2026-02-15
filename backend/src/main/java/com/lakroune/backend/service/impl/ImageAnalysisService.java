@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Helper service for downloading images from external URLs (Cloudinary, S3, CDN, etc.)
- * before passing them to AI vision models.
- */
+
 @Service
 @Slf4j
 public class ImageAnalysisService {
