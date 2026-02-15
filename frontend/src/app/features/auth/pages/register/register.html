@@ -1,0 +1,383 @@
+<div class="min-h-screen bg-gray-50 flex pb-20 lg:pb-0">
+
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 lg:p-12">
+    <div class="w-full max-w-md">
+
+      <div class="mb-8">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-medium text-gray-500">Step {{ currentStep() }} of 3</span>
+          <span class="text-xs font-medium text-gray-500">
+            @switch (currentStep()) {
+              @case (1) { Personal Info }
+              @case (2) { Verify Identity }
+              @case (3) { Account Created }
+            }
+          </span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-1.5">
+          <div
+            class="bg-gray-900 h-1.5 rounded-full transition-all duration-500"
+            [style.width]="progressWidth()"
+          ></div>
+        </div>
+      </div>
+
+      
+      @if (currentStep() === 1) {
+        <div>
+          <div class="mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Create Account</h1>
+            <p class="text-gray-500 text-sm">Enter your personal information to get started.</p>
+          </div>
+
+          <form [formGroup]="personalForm" (ngSubmit)="nextStep()" class="space-y-4" novalidate>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-900 mb-1.5">
+                  Last Name <span class="text-red-500">*</span>
+                </label>
+                <input
+                  formControlName="nom"
+                  type="text"
+                  placeholder="Dupont"
+                  class="input-field"
+                  [class.border-red-400]="hasError('nom', 'required') || hasError('nom', 'minlength')"
+                />
+                @if (hasError('nom', 'required')) {
+                  <p class="error-msg">Last name is required.</p>
+                } @else if (hasError('nom', 'minlength')) {
+                  <p class="error-msg">At least 2 characters.</p>
+                }
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-900 mb-1.5">
+                  First Name <span class="text-red-500">*</span>
+                </label>
+                <input
+                  formControlName="prenom"
+                  type="text"
+                  placeholder="Jean"
+                  class="input-field"
+                  [class.border-red-400]="hasError('prenom', 'required') || hasError('prenom', 'minlength')"
+                />
+                @if (hasError('prenom', 'required')) {
+                  <p class="error-msg">First name is required.</p>
+                } @else if (hasError('prenom', 'minlength')) {
+                  <p class="error-msg">At least 2 characters.</p>
+                }
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-900 mb-1.5">
+                Phone Number <span class="text-red-500">*</span>
+              </label>
+              <input
+                formControlName="telephone"
+                type="tel"
+                placeholder="+212 6XX XXX XXX"
+                class="input-field"
+                [class.border-red-400]="hasError('telephone', 'required') || hasError('telephone', 'pattern')"
+              />
+              @if (hasError('telephone', 'required')) {
+                <p class="error-msg">Phone number is required.</p>
+              } @else if (hasError('telephone', 'pattern')) {
+                <p class="error-msg">Enter a valid phone number (8–15 digits).</p>
+              }
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-900 mb-1.5">
+                Email Address <span class="text-red-500">*</span>
+              </label>
+              <input
+                formControlName="email"
+                type="email"
+                placeholder="you@example.com"
+                class="input-field"
+                [class.border-red-400]="hasError('email', 'required') || hasError('email', 'email')"
+              />
+              @if (hasError('email', 'required')) {
+                <p class="error-msg">Email is required.</p>
+              } @else if (hasError('email', 'email')) {
+                <p class="error-msg">Enter a valid email address.</p>
+              }
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-900 mb-1.5">
+                Password <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <input
+                  formControlName="password"
+                  [type]="showPassword() ? 'text' : 'password'"
+                  placeholder="At least 8 characters"
+                  class="input-field pr-10"
+                  [class.border-red-400]="hasError('password', 'required') || hasError('password', 'minlength')"
+                />
+                <button type="button"
+                  class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+                  (click)="showPassword.set(!showPassword())">
+                  @if (showPassword()) {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    </svg>
+                  } @else {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                  }
+                </button>
+              </div>
+              @if (hasError('password', 'required')) {
+                <p class="error-msg">Password is required.</p>
+              } @else if (hasError('password', 'minlength')) {
+                <p class="error-msg">Password must be at least 8 characters.</p>
+              }
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-900 mb-1.5">
+                Confirm Password <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <input
+                  formControlName="confirmPassword"
+                  [type]="showConfirmPassword() ? 'text' : 'password'"
+                  placeholder="Repeat your password"
+                  class="input-field pr-10"
+                  [class.border-red-400]="field('confirmPassword').touched && personalForm.hasError('passwordMismatch')"
+                />
+                <button type="button"
+                  class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+                  (click)="showConfirmPassword.set(!showConfirmPassword())">
+                  @if (showConfirmPassword()) {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    </svg>
+                  } @else {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                  }
+                </button>
+              </div>
+              @if (field('confirmPassword').touched && personalForm.hasError('passwordMismatch')) {
+                <p class="error-msg">Passwords do not match.</p>
+              }
+            </div>
+
+            <button type="submit"
+              class="w-full bg-gray-900 text-white font-semibold py-3.5 rounded-lg hover:bg-gray-800 transition-colors duration-200 shadow-sm hover:shadow-md mt-2">
+              Continue →
+            </button>
+
+            <p class="text-center text-sm text-gray-600">
+              Already have an account?
+              <button type="button"
+                class="text-blue-600 hover:text-blue-700 font-semibold hover:underline"
+                (click)="goToLogin()">Sign in</button>
+            </p>
+          </form>
+        </div>
+      }
+
+      
+      @if (currentStep() === 2) {
+        <div>
+          <div class="mb-6">
+            <button type="button"
+              class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-4"
+              (click)="back()">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+              Back
+            </button>
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Verify Your Identity</h1>
+            <p class="text-gray-500 text-sm leading-relaxed">
+              Upload a photo of your National ID Card (CIN). Our AI will extract
+              your information and verify it matches what you entered.
+            </p>
+          </div>
+
+          <div class="space-y-4">
+
+            <label for="cinUpload"
+              class="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-xl cursor-pointer overflow-hidden transition-colors"
+              [class.border-gray-300]="!cinPreviewUrl()"
+              [class.bg-gray-50]="!cinPreviewUrl()"
+              [class.border-green-400]="cinVerified()"
+              [class.border-blue-300]="cinPreviewUrl() && !cinVerified()">
+              @if (cinPreviewUrl()) {
+                <img [src]="cinPreviewUrl()" alt="CIN preview"
+                  class="absolute inset-0 w-full h-full object-contain p-2"/>
+                @if (cinVerified()) {
+                  <div class="absolute inset-0 bg-green-500 bg-opacity-10 flex items-center justify-center">
+                    <div class="bg-green-500 text-white rounded-full p-2">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                      </svg>
+                    </div>
+                  </div>
+                }
+              } @else {
+                <div class="flex flex-col items-center gap-2 text-gray-400 pointer-events-none select-none">
+                  <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  <span class="text-sm font-medium">Click to upload CIN image</span>
+                  <span class="text-xs">PNG, JPG, JPEG</span>
+                </div>
+              }
+              <input id="cinUpload" type="file" accept="image/png,image/jpeg,image/jpg"
+                class="hidden" (change)="onFileChange($event)"/>
+            </label>
+
+            @if (uploadProgress() === 'uploading') {
+              <div class="flex items-center gap-2 text-blue-600 text-sm">
+                <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                </svg>
+                Uploading image…
+              </div>
+            } @else if (uploadProgress() === 'analyzing') {
+              <div class="flex items-center gap-2 text-purple-600 text-sm">
+                <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                </svg>
+                Analyzing CIN with AI — this may take a moment…
+              </div>
+            }
+
+            @if (cinAnalysis() && uploadProgress() === 'done' && !cinAnalysis()?.error) {
+              <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2 text-sm">
+                <p class="font-semibold text-gray-700 mb-1">Extracted from CIN</p>
+                @if (cinAnalysis()?.nom) {
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">Last Name</span>
+                    <span class="font-medium text-gray-900">{{ cinAnalysis()?.nom }}</span>
+                  </div>
+                }
+                @if (cinAnalysis()?.prenom) {
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">First Name</span>
+                    <span class="font-medium text-gray-900">{{ cinAnalysis()?.prenom }}</span>
+                  </div>
+                }
+                @if (cinAnalysis()?.numeroCIN) {
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">CIN Number</span>
+                    <span class="font-medium text-gray-900">{{ cinAnalysis()?.numeroCIN }}</span>
+                  </div>
+                }
+                @if (cinAnalysis()?.dateNaissance) {
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">Date of Birth</span>
+                    <span class="font-medium text-gray-900">{{ cinAnalysis()?.dateNaissance }}</span>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (errorMsg()) {
+              <div class="flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+                <svg class="w-4 h-4 text-red-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v4.5a.75.75 0 001.5 0v-4.5zm-.75 7a.75.75 0 100-1.5.75.75 0 000 1.5z"
+                    clip-rule="evenodd"/>
+                </svg>
+                <p class="text-sm text-red-700">{{ errorMsg() }}</p>
+              </div>
+            }
+
+            @if (!cinVerified()) {
+              <button type="button"
+                class="w-full bg-gray-900 text-white font-semibold py-3.5 rounded-lg hover:bg-gray-800 transition-colors duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                [disabled]="!cinFile() || isLoading()"
+                (click)="verifyCin()">
+                @if (isLoading()) {
+                  <span class="flex items-center justify-center gap-2">
+                    <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                    </svg>
+                    Processing…
+                  </span>
+                } @else { Verify Identity }
+              </button>
+            } @else {
+              <div class="flex items-center gap-2 text-green-600 text-sm font-medium">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Identity verified successfully!
+              </div>
+              <button type="button"
+                class="w-full bg-green-600 text-white font-semibold py-3.5 rounded-lg hover:bg-green-700 transition-colors duration-200 shadow-sm disabled:opacity-50"
+                [disabled]="isLoading()"
+                (click)="createAccount()">
+                @if (isLoading()) {
+                  <span class="flex items-center justify-center gap-2">
+                    <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                    </svg>
+                    Creating account…
+                  </span>
+                } @else { Create Account }
+              </button>
+            }
+
+          </div>
+        </div>
+      }
+
+      
+      @if (currentStep() === 3) {
+        <div class="flex flex-col items-center text-center py-8">
+          <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-3">Account Created!</h1>
+          <p class="text-gray-500 text-sm leading-relaxed mb-2">
+            Welcome! Your account has been successfully created.
+          </p>
+          @if (createdUserEmail()) {
+            <p class="text-gray-700 text-sm font-medium mb-8">{{ createdUserEmail() }}</p>
+          }
+          <button type="button"
+            class="w-full bg-gray-900 text-white font-semibold py-3.5 rounded-lg hover:bg-gray-800 transition-colors duration-200 shadow-sm"
+            (click)="goToLogin()">
+            Go to Sign In
+          </button>
+        </div>
+      }
+
+      <div class="mt-8 text-center">
+        <p class="text-xs text-gray-400">© 2026 ALL RIGHTS RESERVED</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="hidden lg:block lg:w-1/2 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <div class="absolute inset-0 flex items-center justify-center p-12">
+        <img src="./auth.png" alt="Payment illustration" class="w-full h-full object-contain">
+      </div>
+    </div>
+  </div>
+
+</div>
