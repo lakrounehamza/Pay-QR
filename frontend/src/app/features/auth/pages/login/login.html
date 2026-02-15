@@ -1,0 +1,115 @@
+<div class="min-h-screen bg-gray-50 flex pb-20 lg:pb-0">
+
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 lg:p-12">
+    <div class="w-full max-w-md">
+
+      <div class="mb-8 lg:mb-10">
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3">
+          Welcome Back
+        </h1>
+        <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+          Today is a new day. It's your day.<br>
+          Sign in to start managing your account.
+        </p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-5" novalidate>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-900 mb-2">Email</label>
+          <input
+            formControlName="email"
+            type="email"
+            placeholder="you@example.com"
+            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-200 transition-all text-sm"
+            [class.border-red-400]="hasError('email','required') || hasError('email','email')"
+          />
+          @if (hasError('email', 'required')) {
+            <p class="mt-1 text-xs text-red-500">Email is required.</p>
+          } @else if (hasError('email', 'email')) {
+            <p class="mt-1 text-xs text-red-500">Enter a valid email address.</p>
+          }
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-900 mb-2">Password</label>
+          <div class="relative">
+            <input
+              formControlName="password"
+              [type]="showPassword() ? 'text' : 'password'"
+              placeholder="Your password"
+              class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-200 transition-all text-sm pr-10"
+              [class.border-red-400]="hasError('password','required')"
+            />
+            <button type="button"
+              class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+              (click)="showPassword.set(!showPassword())">
+              @if (showPassword()) {
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                </svg>
+              } @else {
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              }
+            </button>
+          </div>
+          @if (hasError('password', 'required')) {
+            <p class="mt-1 text-xs text-red-500">Password is required.</p>
+          }
+        </div>
+
+        
+        @if (errorMsg()) {
+          <div class="flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+            <svg class="w-4 h-4 text-red-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v4.5a.75.75 0 001.5 0v-4.5zm-.75 7a.75.75 0 100-1.5.75.75 0 000 1.5z"
+                clip-rule="evenodd"/>
+            </svg>
+            <p class="text-sm text-red-700">{{ errorMsg() }}</p>
+          </div>
+        }
+
+        
+        <button type="submit"
+          class="w-full bg-gray-900 text-white font-semibold py-3.5 rounded-lg hover:bg-gray-800 transition-colors duration-200 shadow-sm hover:shadow-md disabled:opacity-60"
+          [disabled]="isLoading()">
+          @if (isLoading()) {
+            <span class="flex items-center justify-center gap-2">
+              <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+              </svg>
+              Signing in…
+            </span>
+          } @else { Sign in }
+        </button>
+
+        <p class="text-center text-sm text-gray-600 mt-6">
+          Don't have an account?
+          <button type="button"
+            class="text-blue-600 hover:text-blue-700 font-semibold hover:underline"
+            (click)="signUp()">Sign up</button>
+        </p>
+      </form>
+
+      <div class="mt-8 text-center">
+        <p class="text-xs text-gray-400">© 2026 ALL RIGHTS RESERVED</p>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="hidden lg:block lg:w-1/2 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <div class="absolute inset-0 flex items-center justify-center p-12">
+        <img src="./auth.png" alt="Payment illustration" class="w-full h-full object-contain">
+      </div>
+    </div>
+  </div>
+
+</div>
