@@ -1,0 +1,346 @@
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<div class="devbody">
+
+
+<aside class="sidebar hidden lg:flex">
+  <div class="flex items-center gap-3 mb-10">
+    <div style="background: linear-gradient(135deg, #4338ca, #6366f1);" class="w-10 h-10 rounded-xl flex items-center justify-center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <rect x="2" y="5" width="20" height="14" rx="3"/>
+        <path d="M2 10h20"/>
+      </svg>
+    </div>
+    <span style="font-family:'Syne',sans-serif; font-weight:800;" class="text-xl text-gray-900">Pay-QR</span>
+  </div>
+
+  <nav class="flex-1">
+    <p class="text-xs text-gray-400 uppercase tracking-widest mb-3 px-4">Main</p>
+    <div class="nav-item cursor-pointer" (click)="goToDashboard()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </div>
+    @if (!isEnterpriseUser()) {
+      <div class="nav-item active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2v-5"/><path d="M16 12h5v4h-5a2 2 0 010-4z"/></svg>
+        Wallet
+      </div>
+    }
+    <div class="nav-item cursor-pointer" (click)="goToQr()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h.01M14 17h.01M17 14h.01M17 17h.01"/></svg>
+      QR Code
+    </div>
+  </nav>
+
+  <div class="flex items-center gap-3 pt-6 border-t border-gray-100 mt-4">
+    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
+      {{ userInitials() }}
+    </div>
+    <div class="min-w-0 flex-1">
+      <p class="font-semibold text-gray-900 text-sm truncate">{{ userDisplayName() }}</p>
+      <p class="text-gray-400 text-xs">{{ currentUser()?.role }}</p>
+    </div>
+    <button class="ml-auto text-gray-400 hover:text-gray-600" (click)="logout()" title="Logout">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</aside>
+
+
+<div class="main-content">
+
+  
+  <div class="flex justify-between items-center mb-6 px-4 pt-4 lg:hidden">
+    <span style="font-family:'Syne',sans-serif;" class="font-bold text-lg text-gray-900">Pay-QR</span>
+    <button class="bg-white p-2.5 rounded-full shadow-md hover:shadow-lg transition-all" (click)="menuOpen.set(true)" aria-label="Open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  
+  @if (menuOpen()) {
+    <div class="fixed inset-0 z-50 lg:hidden">
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" (click)="menuOpen.set(false)"></div>
+      <aside class="absolute left-0 top-0 h-full w-72 bg-white shadow-2xl flex flex-col p-6" style="animation:slideInLeft .25s ease-out both">
+        <div class="flex items-center justify-between mb-10">
+          <div class="flex items-center gap-3">
+            <div style="background:linear-gradient(135deg,#4338ca,#6366f1)" class="w-9 h-9 rounded-xl flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>
+            </div>
+            <span style="font-family:'Syne',sans-serif; font-weight:800;" class="text-xl text-gray-900">Pay-QR</span>
+          </div>
+          <button class="p-2 rounded-full hover:bg-gray-100 text-gray-500" (click)="menuOpen.set(false)" aria-label="Close menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <nav class="flex-1 space-y-1">
+          <p class="text-xs text-gray-400 uppercase tracking-widest mb-3 px-4">Main</p>
+          <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 font-medium text-sm transition-colors" (click)="menuOpen.set(false); goToDashboard()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Dashboard
+          </button>
+          @if (!isEnterpriseUser()) {
+            <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-indigo-50 text-indigo-700 font-semibold text-sm">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2v-5"/><path d="M16 12h5v4h-5a2 2 0 010-4z"/></svg>
+              Wallet
+            </button>
+          }
+          <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 font-medium text-sm transition-colors" (click)="menuOpen.set(false); goToQr()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h.01M14 17h.01M17 14h.01M17 17h.01"/></svg>
+            QR Code
+          </button>
+        </nav>
+        <div class="pt-6 border-t border-gray-100">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">{{ userInitials() }}</div>
+            <div class="min-w-0">
+              <p class="font-semibold text-gray-900 text-sm truncate">{{ userDisplayName() }}</p>
+              <p class="text-gray-400 text-xs">{{ currentUser()?.role }}</p>
+            </div>
+          </div>
+          <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-600 hover:bg-rose-50 font-medium text-sm transition-colors" (click)="logout()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Logout
+          </button>
+        </div>
+      </aside>
+    </div>
+  }
+
+
+@if (loading()) {
+  <div class="page-wrap loading-wrap">
+    <svg class="spin loading-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+    </svg>
+    <p class="loading-text">Loading your wallet…</p>
+  </div>
+}
+
+
+@if (!loading() && loadError()) {
+  <div class="page-wrap loading-wrap">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:48px;height:48px;color:#ef4444" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" stroke-width="2"/>
+      <path d="M12 8v4M12 16h.01" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <p class="loading-text" style="color:#ef4444">{{ loadError() }}</p>
+  </div>
+}
+
+
+@if (view === 'success') {
+  <div class="page-wrap">
+    <div class="success-screen">
+      <div class="success-circle pop">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="success-title fade-up">Done!</h2>
+      <p class="success-msg fade-up-1">{{ successMessage }}</p>
+      <p class="success-balance fade-up-2">
+        Account Balance: <strong>{{ balance() | number:'1.2-2' }} MAD</strong>
+      </p>
+      <button class="btn-primary fade-up-3" (click)="goTo('wallet')">Back to Wallet</button>
+    </div>
+  </div>
+}
+
+
+@if (!loading() && !loadError() && view === 'wallet') {
+  <div class="page-wrap">
+    <div class="container">
+
+      
+      <header class="header card-enter">
+        <div>
+          <p class="header-label">E-Wallet</p>
+          <h1 class="header-title">My Wallet</h1>
+        </div>
+      </header>
+
+      
+      <div class="wallet-grid">
+
+        
+        <div class="balance-card card-enter card-enter-1">
+          <div class="balance-bg-circle" aria-hidden="true"></div>
+          <p class="balance-label">Total Balance</p>
+          <p class="balance-amount">{{ balance() | number:'1.2-2' }} MAD</p>
+          <div class="balance-actions">
+            <button class="action-chip topup-chip" (click)="goTo('topup')">
+              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Top Up
+            </button>
+            <button class="action-chip withdraw-chip" (click)="goTo('withdraw')">
+              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Withdraw
+            </button>
+          </div>
+        </div>
+
+        
+        <section class="section section-tx card-enter card-enter-2">
+          <h2 class="section-title mb-3">Recent Transactions</h2>
+          @if (recentOps().length === 0) {
+            <div class="empty-state">No transactions yet.</div>
+          }
+          <div class="tx-list">
+            @for (op of recentOps(); track op.id) {
+              <div class="tx-item">
+                <div
+                  class="tx-icon"
+                  [class.tx-topup]="isCredit(op.type)"
+                  [class.tx-withdraw]="!isCredit(op.type)"
+                  aria-hidden="true"
+                >
+                  <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    @if (isCredit(op.type)) {
+                      <path d="M12 19V5M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+                    }
+                    @if (!isCredit(op.type)) {
+                      <path d="M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+                    }
+                  </svg>
+                </div>
+                <div class="tx-info">
+                  <p class="tx-type">{{ operationLabel(op.type) }}</p>
+                  <p class="tx-meta">{{ op.createdAt | date:'MMM d, y' }} · {{ op.status }}</p>
+                </div>
+                <p
+                  class="tx-amount"
+                  [class.amount-plus]="isCredit(op.type)"
+                  [class.amount-minus]="!isCredit(op.type)"
+                >
+                  {{ isCredit(op.type) ? '+' : '-' }}{{ op.amount | number:'1.2-2' }} MAD
+                </p>
+              </div>
+            }
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+  </div>
+
+ 
+}
+
+
+@if (!loading() && !loadError() && (view === 'topup' || view === 'withdraw')) {
+  <div class="page-wrap">
+    <div class="container txn-container">
+
+      <header class="header card-enter">
+        <button class="icon-btn" (click)="goTo('wallet')" aria-label="Back">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <h1 class="page-title">{{ view === 'topup' ? 'Top Up Wallet' : 'Withdraw Funds' }}</h1>
+        <div style="width:42px"></div>
+      </header>
+
+      
+      <div class="balance-pill card-enter card-enter-1">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21 12V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2v-5" stroke-linecap="round"/>
+          <path d="M16 12h5v4h-5a2 2 0 010-4z" stroke-linecap="round"/>
+        </svg>
+        <span>Balance: <strong>{{ balance() | number:'1.2-2' }} MAD</strong></span>
+      </div>
+
+      
+      <div class="section card-enter card-enter-2">
+        <h2 class="section-title mb-3">
+          {{ view === 'topup' ? 'Amount to Add' : 'Amount to Withdraw' }}
+        </h2>
+        <div class="amount-input-wrap">
+          <span class="amount-prefix" aria-hidden="true">MAD</span>
+          <input
+            type="number"
+            class="amount-input"
+            [class.field-error]="!!transactionError"
+            placeholder="0.00"
+            [(ngModel)]="transactionAmount"
+            (ngModelChange)="transactionError = ''"
+            min="1"
+            aria-label="Amount"
+          />
+        </div>
+        @if (transactionError) {
+          <p class="error-msg mt-1" role="alert">{{ transactionError }}</p>
+        }
+        <div class="quick-amounts" role="group" aria-label="Quick amounts">
+          @for (a of quickAmounts; track a) {
+            <button
+              class="quick-btn"
+              [class.quick-active]="transactionAmount === a.toString()"
+              (click)="setAmount(a)"
+            >{{ a }} MAD</button>
+          }
+        </div>
+      </div>
+
+      
+      @if (view === 'topup') {
+        <div class="section card-enter card-enter-3">
+          <h2 class="section-title mb-3">Card Details</h2>
+          @if (!stripeReady()) {
+            <div class="stripe-loading">
+              <svg class="spin stripe-loading-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+              </svg>
+              <span>Loading secure payment form…</span>
+            </div>
+          }
+          <div id="stripe-card-element" class="stripe-card-element" [style.display]="stripeReady() ? 'block' : 'none'"></div>
+          @if (cardError()) {
+            <p class="error-msg mt-1" role="alert">{{ cardError() }}</p>
+          }
+        </div>
+      }
+
+      
+      <div class="card-enter card-enter-4">
+        <button
+          class="btn-primary btn-full"
+          [class.btn-red]="view === 'withdraw'"
+          [disabled]="processingPayment() || (view === 'topup' && !stripeReady())"
+          (click)="view === 'topup' ? topUp() : withdraw()"
+        >
+          @if (processingPayment()) {
+            <svg class="spin" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+            </svg>
+            Processing...
+          } @else {
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+              @if (view === 'topup') {
+                <path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+              }
+              @if (view === 'withdraw') {
+                <path d="M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+              }
+            </svg>
+            {{ view === 'topup' ? 'Confirm Top Up' : 'Confirm Withdrawal' }}
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+</div>
+</div>
