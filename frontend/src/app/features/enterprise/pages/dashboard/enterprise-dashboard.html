@@ -1,0 +1,170 @@
+﻿<div class="space-y-6 sm:space-y-8 max-w-7xl mx-auto">
+
+  <div>
+    <h1 class="text-3xl md:text-4xl font-bold text-[#1a1a1a] tracking-tight mb-1">Dashboard</h1>
+    <p class="text-slate-500 text-sm">Overview of your enterprise activity.</p>
+  </div>
+
+  @if (error()) {
+    <div class="px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm" role="alert">
+      {{ error() }}
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-50 animate-pulse">
+          <div class="h-12 w-12 bg-slate-100 rounded-xl mb-4"></div>
+          <div class="h-4 w-24 bg-slate-100 rounded mb-2"></div>
+          <div class="h-8 w-32 bg-slate-100 rounded"></div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (!loading() && stats()) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <div class="group bg-white border border-slate-50 rounded-2xl p-6 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_-4px_rgba(79,70,229,0.10)] transition-all duration-300">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+            </svg>
+          </div>
+          <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">{{ activeRate() }}% active</span>
+        </div>
+        <h3 class="text-slate-400 text-sm font-medium mb-1">Total Employees</h3>
+        <p class="text-[#1a1a1a] text-2xl font-bold">{{ stats()!.totalEmployees | number }}</p>
+        <a routerLink="../users" class="text-xs text-indigo-600 hover:underline mt-2 inline-block">Manage â†’</a>
+      </div>
+
+      <div class="group bg-white border border-slate-50 rounded-2xl p-6 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_-4px_rgba(79,70,229,0.10)] transition-all duration-300">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-12 h-12 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+          </div>
+          <span class="text-xs font-semibold text-violet-600 bg-violet-50 px-2 py-1 rounded-full">balance</span>
+        </div>
+        <h3 class="text-slate-400 text-sm font-medium mb-1">Total Balance</h3>
+        <p class="text-[#1a1a1a] text-2xl font-bold">{{ stats()!.totalBalance | number:'1.2-2' }}</p>
+        <a routerLink="../funding" class="text-xs text-indigo-600 hover:underline mt-2 inline-block">Fund accounts â†’</a>
+      </div>
+
+      <div class="group bg-white border border-slate-50 rounded-2xl p-6 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_-4px_rgba(79,70,229,0.10)] transition-all duration-300">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+            </svg>
+          </div>
+          <span class="text-xs font-semibold text-teal-600 bg-teal-50 px-2 py-1 rounded-full">ops</span>
+        </div>
+        <h3 class="text-slate-400 text-sm font-medium mb-1">Total Operations</h3>
+        <p class="text-[#1a1a1a] text-2xl font-bold">{{ stats()!.totalOperations | number }}</p>
+      </div>
+
+      <div class="group bg-white border border-slate-50 rounded-2xl p-6 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_-4px_rgba(79,70,229,0.10)] transition-all duration-300">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-12 h-12 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+          </div>
+          <span class="text-xs font-semibold text-orange-600 bg-orange-50 px-2 py-1 rounded-full">success</span>
+        </div>
+        <h3 class="text-slate-400 text-sm font-medium mb-1">Successful Ops</h3>
+        <p class="text-[#1a1a1a] text-2xl font-bold">{{ stats()!.successOperations | number }}</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <div class="bg-white rounded-2xl p-6 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] border border-slate-50">
+        <h3 class="text-[#1a1a1a] font-semibold text-lg mb-5">Employee Status</h3>
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between text-sm mb-1.5">
+              <span class="flex items-center gap-1.5 text-slate-500">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block" aria-hidden="true"></span>Active
+              </span>
+              <span class="font-semibold text-[#1a1a1a]">{{ stats()!.activeEmployees }} / {{ stats()!.totalEmployees }}</span>
+            </div>
+            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full bg-emerald-400 rounded-full transition-all duration-700"
+                [style.width.%]="stats()!.totalEmployees > 0 ? (stats()!.activeEmployees / stats()!.totalEmployees * 100) : 0"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1.5">
+              <span class="flex items-center gap-1.5 text-slate-500">
+                <span class="w-2 h-2 rounded-full bg-rose-400 inline-block" aria-hidden="true"></span>Blocked
+              </span>
+              <span class="font-semibold text-[#1a1a1a]">{{ stats()!.blockedEmployees }}</span>
+            </div>
+            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full bg-rose-400 rounded-full transition-all duration-700"
+                [style.width.%]="stats()!.totalEmployees > 0 ? (stats()!.blockedEmployees / stats()!.totalEmployees * 100) : 0"></div>
+            </div>
+          </div>
+        </div>
+        <a routerLink="../users" class="mt-5 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:underline">
+          Manage Users
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] border border-slate-50">
+        <h3 class="text-[#1a1a1a] font-semibold text-lg mb-5">Operations Summary</h3>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between p-3 rounded-xl bg-emerald-50">
+            <p class="text-xs text-slate-500">Successful</p>
+            <p class="font-bold text-emerald-700">{{ stats()!.successOperations | number }}</p>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl bg-rose-50">
+            <p class="text-xs text-slate-500">Failed</p>
+            <p class="font-bold text-rose-700">{{ stats()!.failedOperations | number }}</p>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50">
+            <p class="text-xs text-slate-500">Total</p>
+            <p class="font-bold text-[#1a1a1a]">{{ stats()!.totalOperations | number }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] border border-slate-50">
+        <h3 class="text-[#1a1a1a] font-semibold text-lg mb-5">Quick Actions</h3>
+        <div class="space-y-3">
+          <a routerLink="../users"
+            class="flex items-center gap-3 p-4 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50 group transition-all">
+            <div class="w-10 h-10 rounded-lg bg-indigo-50 group-hover:bg-indigo-100 text-indigo-600 flex items-center justify-center transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-[#1a1a1a] group-hover:text-indigo-700">Add Employee</p>
+              <p class="text-xs text-slate-400">Create a new enterprise user</p>
+            </div>
+          </a>
+          <a routerLink="../funding"
+            class="flex items-center gap-3 p-4 rounded-xl border border-slate-100 hover:border-teal-200 hover:bg-teal-50 group transition-all">
+            <div class="w-10 h-10 rounded-lg bg-teal-50 group-hover:bg-teal-100 text-teal-600 flex items-center justify-center transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-[#1a1a1a] group-hover:text-teal-700">Fund Account</p>
+              <p class="text-xs text-slate-400">Charge or decharge a user</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>
