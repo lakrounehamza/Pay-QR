@@ -1,0 +1,7 @@
+:host {
+  display: block;
+}
+
+#enterprise-stripe-card {
+  min-height: 46px;
+}
