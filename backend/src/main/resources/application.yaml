@@ -13,6 +13,18 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: lakrounehamza10@gmail.com
+    password: pphodrxepirbcqjn
+
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 jwt:
   secret: Ys+5/eaN0bFKzDSqnnM66Zvbu3KGFaUOAmmwnj531ZeR88YTx9G1/bQM860XWaKr3+PYZdmfKdGzY6DtKC9Ieg==
   expiration: 86400000
