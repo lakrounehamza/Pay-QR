@@ -1,0 +1,33 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center p-4 pb-24 lg:pb-4">
+  <div class="max-w-md w-full text-center px-6 py-12">
+
+    <div class="mb-8 flex justify-center">
+      <div class="relative">
+        <div class="w-32 h-32 rounded-full bg-white/20 flex items-center justify-center">
+          <div class="w-28 h-28 rounded-full bg-white flex items-center justify-center">
+            <svg class="w-16 h-16 text-blue-600" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="absolute top-3 right-3 w-4 h-4 bg-white rounded-full" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <h1 class="text-white text-4xl font-bold mb-4 tracking-tight">
+      Welcome Michael!
+    </h1>
+
+    <p class="text-white/90 text-base mb-10 leading-relaxed px-4">
+      It seems everything went well and your app is ready to work with you
+    </p>
+
+    <button
+      (click)="getStarted()"
+      class="bg-white text-blue-600 font-semibold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 active:scale-95 w-full max-w-xs mx-auto block"
+    >
+      Get Started
+    </button>
+
+  </div>
+</div>
