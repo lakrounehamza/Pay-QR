@@ -1,0 +1,275 @@
+<div class="space-y-6 max-w-7xl mx-auto">
+
+  
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold text-[#1a1a1a] tracking-tight">Users</h1>
+      <p class="text-slate-500 text-sm mt-1">Manage users of your enterprise</p>
+    </div>
+    <button
+      (click)="openModal()"
+      class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:-translate-y-0.5 transition-all"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      New User
+    </button>
+  </div>
+
+  
+  @if (notification()) {
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium border transition-all"
+      [class.bg-emerald-50]="notification()!.type === 'success'"
+      [class.border-emerald-200]="notification()!.type === 'success'"
+      [class.text-emerald-700]="notification()!.type === 'success'"
+      [class.bg-rose-50]="notification()!.type === 'error'"
+      [class.border-rose-200]="notification()!.type === 'error'"
+      [class.text-rose-700]="notification()!.type === 'error'"
+      role="alert">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      {{ notification()!.message }}
+    </div>
+  }
+
+  
+  <div class="bg-white rounded-2xl shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] border border-slate-50 overflow-hidden">
+    <div class="p-6 border-b border-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h3 class="text-[#1a1a1a] font-semibold text-lg">All Users</h3>
+        <p class="text-xs text-slate-400">{{ filteredUsers().length }} total</p>
+      </div>
+      <div class="relative">
+        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input type="search" placeholder="Search users..." aria-label="Search users" [value]="search()" (input)="onSearch($event)"
+          class="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors w-full sm:w-56" />
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="p-12 flex justify-center" role="status" aria-label="Loading">
+        <div class="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+      </div>
+    }
+
+    @if (!loading()) {
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr class="bg-slate-50/50 border-b border-slate-100 text-xs uppercase tracking-wider text-slate-400 font-semibold">
+              <th class="px-4 sm:px-6 py-4" scope="col">User</th>
+              <th class="px-4 sm:px-6 py-4 hidden sm:table-cell" scope="col">Email</th>
+              <th class="px-4 sm:px-6 py-4 hidden lg:table-cell" scope="col">Phone</th>
+              <th class="px-4 sm:px-6 py-4" scope="col">Role</th>
+              <th class="px-4 sm:px-6 py-4 hidden md:table-cell" scope="col">Joined</th>
+              <th class="px-4 sm:px-6 py-4" scope="col">Status</th>
+              <th class="px-4 sm:px-6 py-4 text-right" scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of filteredUsers(); track user.id) {
+              <tr class="hover:bg-slate-50/80 transition-colors border-b border-slate-50 last:border-0">
+                <td class="px-4 sm:px-6 py-4">
+                  <button
+                    (click)="openDetail(user)"
+                    class="flex items-center gap-3 hover:underline text-left"
+                  >
+                    <div class="w-9 h-9 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-bold shrink-0" aria-hidden="true">
+                      {{ initials(user) }}
+                    </div>
+                    <span class="font-medium text-[#1a1a1a]">{{ user.email }}</span>
+                  </button>
+                </td>
+                <td class="px-4 sm:px-6 py-4 text-slate-500 hidden sm:table-cell">{{ user.email }}</td>
+                <td class="px-4 sm:px-6 py-4 text-slate-500 hidden lg:table-cell">{{ user.telephone ?? '—' }}</td>
+                <td class="px-4 sm:px-6 py-4">
+                  <span class="px-2.5 py-0.5 rounded-full text-xs font-medium"
+                    [class.bg-indigo-100]="user.role === 'ENTERPRISE_ADMIN'"
+                    [class.text-indigo-700]="user.role === 'ENTERPRISE_ADMIN'"
+                    [class.bg-slate-100]="user.role !== 'ENTERPRISE_ADMIN'"
+                    [class.text-slate-600]="user.role !== 'ENTERPRISE_ADMIN'"
+                  >{{ user.role }}</span>
+                </td>
+                <td class="px-4 sm:px-6 py-4 text-slate-500 hidden md:table-cell">{{ user.createdAt | date:'mediumDate' }}</td>
+                <td class="px-4 sm:px-6 py-4">
+                  @if (user.status === 'ACTIVE') {
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true"></span> Active
+                    </span>
+                  } @else if (user.status === 'BLOCKED') {
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
+                      <span class="w-1.5 h-1.5 rounded-full bg-orange-500" aria-hidden="true"></span> Blocked
+                    </span>
+                  } @else {
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-700">
+                      <span class="w-1.5 h-1.5 rounded-full bg-rose-500" aria-hidden="true"></span> Inactive
+                    </span>
+                  }
+                </td>
+                <td class="px-4 sm:px-6 py-4 text-right">
+                  @if (user.status !== 'ACTIVE') {
+                    <button (click)="activate(user)" [disabled]="actionLoading() === user.id"
+                      class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-medium transition-colors disabled:opacity-50 whitespace-nowrap">
+                      @if (actionLoading() === user.id) {
+                        <span class="inline-block w-3 h-3 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mr-1" aria-hidden="true"></span>
+                      }
+                      Activate
+                    </button>
+                  } @else {
+                    <button (click)="deactivate(user)" [disabled]="actionLoading() === user.id"
+                      class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-medium transition-colors disabled:opacity-50 whitespace-nowrap">
+                      @if (actionLoading() === user.id) {
+                        <span class="inline-block w-3 h-3 border-2 border-rose-600 border-t-transparent rounded-full animate-spin mr-1" aria-hidden="true"></span>
+                      }
+                      Deactivate
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+            @empty {
+              <tr><td colspan="7" class="px-4 sm:px-6 py-12 text-center text-slate-400 text-sm">No users found.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+
+@if (showModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="create-user-title">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-slate-100 overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-slate-50">
+        <h2 id="create-user-title" class="text-lg font-bold text-[#1a1a1a]">Create User</h2>
+        <button (click)="closeModal()" aria-label="Close modal" class="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-50">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form [formGroup]="createForm" (ngSubmit)="submitCreate()" class="px-6 pt-5 pb-6 space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="u-nom" class="block text-sm font-medium text-slate-700 mb-1.5">First Name <span class="text-rose-500" aria-hidden="true">*</span></label>
+            <input id="u-nom" formControlName="nom" type="text" placeholder="Marie"
+              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"/>
+            @if (createForm.get('nom')?.invalid && createForm.get('nom')?.touched) {
+              <p class="text-xs text-rose-500 mt-1" role="alert">Required.</p>
+            }
+          </div>
+          <div>
+            <label for="u-prenom" class="block text-sm font-medium text-slate-700 mb-1.5">Last Name <span class="text-rose-500" aria-hidden="true">*</span></label>
+            <input id="u-prenom" formControlName="prenom" type="text" placeholder="Curie"
+              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"/>
+            @if (createForm.get('prenom')?.invalid && createForm.get('prenom')?.touched) {
+              <p class="text-xs text-rose-500 mt-1" role="alert">Required.</p>
+            }
+          </div>
+        </div>
+
+        <div>
+          <label for="u-email" class="block text-sm font-medium text-slate-700 mb-1.5">Email <span class="text-rose-500" aria-hidden="true">*</span></label>
+          <input id="u-email" formControlName="email" type="email" placeholder="user@company.com" autocomplete="email"
+            class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"/>
+          @if (createForm.get('email')?.invalid && createForm.get('email')?.touched) {
+            <p class="text-xs text-rose-500 mt-1" role="alert">Valid email required.</p>
+          }
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="u-telephone" class="block text-sm font-medium text-slate-700 mb-1.5">Phone <span class="text-rose-500" aria-hidden="true">*</span></label>
+            <input id="u-telephone" formControlName="telephone" type="tel" placeholder="+212 6 00 00 00 00" autocomplete="tel"
+              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"/>
+            @if (createForm.get('telephone')?.invalid && createForm.get('telephone')?.touched) {
+              <p class="text-xs text-rose-500 mt-1" role="alert">Required.</p>
+            }
+          </div>
+          <div>
+            <label for="u-role" class="block text-sm font-medium text-slate-700 mb-1.5">Role</label>
+            <select id="u-role" formControlName="role"
+              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all bg-white">
+              <option value="ENTERPRISE_USER">ENTERPRISE_USER</option>
+              <option value="ENTERPRISE_ADMIN">ENTERPRISE_ADMIN</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="u-password" class="block text-sm font-medium text-slate-700 mb-1.5">Password <span class="text-rose-500" aria-hidden="true">*</span></label>
+          <input id="u-password" formControlName="password" type="password" placeholder="Min. 6 characters" autocomplete="new-password"
+            class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"/>
+          @if (createForm.get('password')?.invalid && createForm.get('password')?.touched) {
+            <p class="text-xs text-rose-500 mt-1" role="alert">Min. 6 characters required.</p>
+          }
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" (click)="closeModal()"
+            class="px-5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all">Cancel</button>
+          <button type="submit" [disabled]="createForm.invalid || formLoading()"
+            class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium shadow-md shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+            @if (formLoading()) {
+              <span class="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" aria-hidden="true"></span>
+            }
+            Create User
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+
+@if (showDetailModal() && selectedUser()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="detail-user-title">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-slate-100 overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-slate-50">
+        <h2 id="detail-user-title" class="text-lg font-bold text-[#1a1a1a]">User Details</h2>
+        <button (click)="closeDetail()" aria-label="Close" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-50">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="px-6 py-6">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-16 h-16 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl font-bold" aria-hidden="true">
+            {{ initials(selectedUser()!) }}
+          </div>
+          <div>
+            <p class="text-lg font-bold text-[#1a1a1a]">{{ selectedUser()!.email }}</p>
+            <p class="text-sm text-slate-500">{{ selectedUser()!.role }}</p>
+          </div>
+          @if (selectedUser()!.status === 'ACTIVE') {
+            <span class="ml-auto inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">Active</span>
+          } @else if (selectedUser()!.status === 'BLOCKED') {
+            <span class="ml-auto inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700">Blocked</span>
+          } @else {
+            <span class="ml-auto inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-700">Inactive</span>
+          }
+        </div>
+        <div class="space-y-3 text-sm">
+          <div class="flex gap-3 py-2 border-b border-slate-50">
+            <span class="text-slate-400 w-24 shrink-0">Email</span>
+            <span class="font-medium text-[#1a1a1a] break-all">{{ selectedUser()!.email }}</span>
+          </div>
+          <div class="flex gap-3 py-2 border-b border-slate-50">
+            <span class="text-slate-400 w-24 shrink-0">Phone</span>
+            <span class="font-medium text-[#1a1a1a]">{{ selectedUser()!.telephone ?? '—' }}</span>
+          </div>
+          <div class="flex gap-3 py-2">
+            <span class="text-slate-400 w-24 shrink-0">Joined</span>
+            <span class="font-medium text-[#1a1a1a]">{{ selectedUser()!.createdAt | date:'longDate' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="px-6 pb-6 flex justify-end">
+        <button (click)="closeDetail()" class="px-5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+}
