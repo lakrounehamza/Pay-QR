@@ -1,0 +1,212 @@
+<div class="space-y-6 max-w-5xl mx-auto">
+
+  <div>
+    <h1 class="text-2xl md:text-3xl font-bold text-[#1a1a1a] tracking-tight">Account Funding</h1>
+    <p class="text-slate-500 text-sm mt-1">Charge or decharge user accounts</p>
+  </div>
+
+  @if (notification()) {
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium border transition-all"
+      [class.bg-emerald-50]="notification()!.type === 'success'"
+      [class.border-emerald-200]="notification()!.type === 'success'"
+      [class.text-emerald-700]="notification()!.type === 'success'"
+      [class.bg-rose-50]="notification()!.type === 'error'"
+      [class.border-rose-200]="notification()!.type === 'error'"
+      [class.text-rose-700]="notification()!.type === 'error'"
+      role="alert">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      {{ notification()!.message }}
+    </div>
+  }
+
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+    <div class="lg:col-span-3 bg-white rounded-2xl p-6 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] border border-slate-50 space-y-6">
+
+      @if (enterpriseAccount()) {
+        <div class="flex items-center justify-between px-4 py-3 rounded-xl bg-indigo-50 border border-indigo-100">
+          <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+            <p class="text-sm font-medium text-indigo-700">Enterprise Balance</p>
+          </div>
+          <p class="text-sm font-bold text-indigo-700">{{ enterpriseAccount()!.solde | number:'1.2-2' }} MAD</p>
+        </div>
+      }
+
+      <div>
+        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Operation Type</p>
+        <div class="grid grid-cols-2 gap-3" role="group" aria-label="Operation type">
+          <button
+            type="button"
+            (click)="setOperation('charge')"
+            class="flex items-center gap-3 p-4 rounded-xl border-2 transition-all"
+            [class.border-emerald-500]="activeOperation() === 'charge'"
+            [class.bg-emerald-50]="activeOperation() === 'charge'"
+            [class.border-slate-200]="activeOperation() !== 'charge'"
+            [attr.aria-pressed]="activeOperation() === 'charge'"
+          >
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center transition-colors"
+              [class.bg-emerald-100]="activeOperation() === 'charge'"
+              [class.text-emerald-600]="activeOperation() === 'charge'"
+              [class.bg-slate-100]="activeOperation() !== 'charge'"
+              [class.text-slate-400]="activeOperation() !== 'charge'">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
+            <div class="text-left">
+              <p class="text-sm font-semibold"
+                [class.text-emerald-700]="activeOperation() === 'charge'"
+                [class.text-gray-900]="activeOperation() !== 'charge'">Credit</p>
+              <p class="text-xs text-slate-400">Add funds</p>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            (click)="setOperation('decharge')"
+            class="flex items-center gap-3 p-4 rounded-xl border-2 transition-all"
+            [class.border-rose-500]="activeOperation() === 'decharge'"
+            [class.bg-rose-50]="activeOperation() === 'decharge'"
+            [class.border-slate-200]="activeOperation() !== 'decharge'"
+            [attr.aria-pressed]="activeOperation() === 'decharge'"
+          >
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center transition-colors"
+              [class.bg-rose-100]="activeOperation() === 'decharge'"
+              [class.text-rose-600]="activeOperation() === 'decharge'"
+              [class.bg-slate-100]="activeOperation() !== 'decharge'"
+              [class.text-slate-400]="activeOperation() !== 'decharge'">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+              </svg>
+            </div>
+            <div class="text-left">
+              <p class="text-sm font-semibold"
+                [class.text-rose-700]="activeOperation() === 'decharge'"
+                [class.text-gray-900]="activeOperation() !== 'decharge'">Debit</p>
+              <p class="text-xs text-slate-400">Withdraw funds</p>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <form [formGroup]="fundingForm" (ngSubmit)="submit()" class="space-y-4">
+
+        <div>
+          <label for="f-user" class="block text-sm font-medium text-slate-700 mb-1.5">User <span class="text-rose-500" aria-hidden="true">*</span></label>
+          @if (usersLoading()) {
+            <div class="w-full h-10 bg-slate-100 rounded-xl animate-pulse"></div>
+          } @else {
+            <select id="f-user" formControlName="userId"
+              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all bg-white">
+              <option value="" disabled>Select a user…</option>
+              @for (user of employees(); track user.id) {
+                <option [value]="user.id" [disabled]="user.status !== 'ACTIVE'">
+                  {{ user.email }}{{ user.status !== 'ACTIVE' ? ' (inactive)' : '' }}
+                </option>
+              }
+            </select>
+          }
+          @if (fundingForm.get('userId')?.invalid && fundingForm.get('userId')?.touched) {
+            <p class="text-xs text-rose-500 mt-1" role="alert">Please select a user.</p>
+          }
+        </div>
+
+        @if (selectedUserInfo()) {
+          <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-indigo-50 border border-indigo-100">
+            <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold shrink-0" aria-hidden="true">
+              {{ selectedUserInfo()!.email.slice(0,2).toUpperCase() }}
+            </div>
+            <p class="text-sm font-medium text-[#1a1a1a]">{{ selectedUserInfo()!.email }}</p>
+          </div>
+        }
+
+        <div>
+          <label for="f-amount" class="block text-sm font-medium text-slate-700 mb-1.5">Amount <span class="text-rose-500" aria-hidden="true">*</span></label>
+          <input id="f-amount" formControlName="amount" type="number" min="0.01" step="0.01" placeholder="0.00"
+            class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"/>
+          @if (fundingForm.get('amount')?.invalid && fundingForm.get('amount')?.touched) {
+            <p class="text-xs text-rose-500 mt-1" role="alert">Amount must be > 0.</p>
+          }
+        </div>
+
+        <div>
+          <label for="f-desc" class="block text-sm font-medium text-slate-700 mb-1.5">Description <span class="text-slate-400 font-normal">(optional)</span></label>
+          <input id="f-desc" formControlName="description" type="text" placeholder="e.g. Monthly salary, Expense reimbursement…"
+            class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"/>
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="fundingForm.invalid || formLoading()"
+          class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-white shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none hover:-translate-y-0.5"
+          [class.bg-emerald-500]="activeOperation() === 'charge'"
+          [class.hover:bg-emerald-600]="activeOperation() === 'charge'"
+          [class.bg-rose-500]="activeOperation() === 'decharge'"
+          [class.hover:bg-rose-600]="activeOperation() === 'decharge'"
+        >
+          @if (formLoading()) {
+            <span class="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" aria-hidden="true"></span>
+          }
+          @if (activeOperation() === 'charge') {
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Credit Account
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14"/></svg>
+            Debit Account
+          }
+        </button>
+      </form>
+    </div>
+
+    <div class="lg:col-span-2 bg-white rounded-2xl shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] border border-slate-50 flex flex-col overflow-hidden">
+      <div class="px-6 pt-6 pb-4 border-b border-slate-50">
+        <h3 class="text-[#1a1a1a] font-semibold text-lg">Session History</h3>
+        <p class="text-xs text-slate-400 mt-0.5">Operations performed this session</p>
+      </div>
+
+      <div class="overflow-y-auto max-h-72 lg:max-h-none lg:flex-1 px-4 py-4 space-y-3">
+        @for (item of history(); track item.id) {
+          <div class="p-3 rounded-xl border border-slate-100 hover:border-slate-200 transition-all">
+            <div class="flex items-start justify-between gap-2 mb-1">
+              <p class="text-sm font-medium text-[#1a1a1a] truncate">{{ item.userName }}</p>
+              <span class="text-xs font-semibold shrink-0"
+                [class.text-emerald-600]="item.operation === 'charge'"
+                [class.text-rose-600]="item.operation === 'decharge'">
+                {{ item.operation === 'charge' ? '+' : '-' }}{{ item.amount | number:'1.2-2' }} MAD
+              </span>
+            </div>
+            @if (item.description) {
+              <p class="text-xs text-slate-400 truncate mb-1">{{ item.description }}</p>
+            }
+            <div class="flex items-center justify-between">
+              <span class="text-xs px-2 py-0.5 rounded-full font-medium"
+                [class.bg-emerald-100]="item.operation === 'charge'"
+                [class.text-emerald-700]="item.operation === 'charge'"
+                [class.bg-rose-100]="item.operation === 'decharge'"
+                [class.text-rose-700]="item.operation === 'decharge'">
+                {{ item.operation === 'charge' ? 'Credit' : 'Debit' }}
+              </span>
+              <span class="text-xs text-slate-400">{{ item.createdAt | date:'dd/MM HH:mm' }}</span>
+            </div>
+          </div>
+        }
+        @empty {
+          <div class="flex flex-col items-center justify-center py-12 text-center">
+            <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </div>
+            <p class="text-sm text-slate-400">No operations yet</p>
+            <p class="text-xs text-slate-300 mt-1">Your session activity will appear here</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
