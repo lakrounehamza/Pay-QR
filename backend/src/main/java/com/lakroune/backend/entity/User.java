@@ -1,18 +1,21 @@
 package com.lakroune.backend.entity;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
 import com.lakroune.backend.enums.UserRole;
 import com.lakroune.backend.enums.UserStatus;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
 @Entity
+@Table(name = "users")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

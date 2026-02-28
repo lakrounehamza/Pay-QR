@@ -1,11 +1,19 @@
 package com.lakroune.backend.entity;
 
-import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Entity
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class OtpCode {
 
     @Id
