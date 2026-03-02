@@ -1,0 +1,170 @@
+<div class="space-y-6 max-w-7xl mx-auto">
+
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold text-[#1a1a1a] tracking-tight">Accounts</h1>
+      <p class="text-slate-500 text-sm mt-1">Manage all bank accounts</p>
+    </div>
+  </div>
+
+  @if (notification()) {
+    <div
+      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium border transition-all"
+      [class.bg-emerald-50]="notification()!.type === 'success'"
+      [class.border-emerald-200]="notification()!.type === 'success'"
+      [class.text-emerald-700]="notification()!.type === 'success'"
+      [class.bg-rose-50]="notification()!.type === 'error'"
+      [class.border-rose-200]="notification()!.type === 'error'"
+      [class.text-rose-700]="notification()!.type === 'error'"
+      role="alert"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      {{ notification()!.message }}
+    </div>
+  }
+
+  <div class="bg-white rounded-2xl shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] border border-slate-50 overflow-hidden">
+
+    <div class="p-6 border-b border-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h3 class="text-[#1a1a1a] font-semibold text-lg">All Accounts</h3>
+        <p class="text-xs text-slate-400">{{ totalElements() }} total</p>
+      </div>
+      <div class="relative">
+        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input
+          type="search"
+          placeholder="Search accounts..."
+          aria-label="Search accounts"
+          class="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-[#5802f7]/50 transition-colors w-full sm:w-56"
+          [value]="search()"
+          (input)="onSearch($event)"
+        />
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="p-12 flex justify-center" role="status" aria-label="Loading">
+        <div class="w-8 h-8 border-4 border-[#5802f7]/20 border-t-[#5802f7] rounded-full animate-spin"></div>
+      </div>
+    }
+
+    @if (!loading()) {
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr class="bg-slate-50/50 border-b border-slate-100 text-xs uppercase tracking-wider text-slate-400 font-semibold">
+              <th class="px-6 py-4" scope="col">Reference</th>
+              <th class="px-6 py-4" scope="col">Owner</th>
+              <th class="px-6 py-4" scope="col">Owner Type</th>
+              <th class="px-6 py-4" scope="col">Balance</th>
+              <th class="px-6 py-4" scope="col">Created</th>
+              <th class="px-6 py-4" scope="col">Status</th>
+              <th class="px-6 py-4 text-right" scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (account of filteredAccounts(); track account.id) {
+              <tr class="hover:bg-slate-50/80 transition-colors border-b border-slate-50 last:border-0">
+                <td class="px-6 py-4 font-mono text-slate-600 font-medium">{{ account.ref }}</td>
+                <td class="px-6 py-4 font-medium text-[#1a1a1a]">{{ account.user?.email ?? '—' }}</td>
+                <td class="px-6 py-4">
+                  <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">{{ account.ownerType }}</span>
+                </td>
+                <td class="px-6 py-4 font-semibold text-[#1a1a1a]">{{ formatCurrency(account.solde) }}</td>
+                <td class="px-6 py-4 text-slate-500">{{ account.createdAt | date: 'mediumDate' }}</td>
+                <td class="px-6 py-4">
+                  @if (account.status === 'ACTIVE') {
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true"></span> Active
+                    </span>
+                  } @else {
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-700">
+                      <span class="w-1.5 h-1.5 rounded-full bg-rose-500" aria-hidden="true"></span> Closed
+                    </span>
+                  }
+                </td>
+                <td class="px-6 py-4 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    @if (account.status !== 'ACTIVE') {
+                      <button
+                        (click)="activate(account)"
+                        [disabled]="actionLoading() === account.id"
+                        class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-medium transition-colors disabled:opacity-50"
+                      >
+                        @if (actionLoading() === account.id) {
+                          <span class="inline-block w-3 h-3 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mr-1" aria-hidden="true"></span>
+                        }
+                        Activate
+                      </button>
+                    } @else {
+                      <button
+                        (click)="deactivate(account)"
+                        [disabled]="actionLoading() === account.id"
+                        class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-medium transition-colors disabled:opacity-50"
+                      >
+                        @if (actionLoading() === account.id) {
+                          <span class="inline-block w-3 h-3 border-2 border-rose-600 border-t-transparent rounded-full animate-spin mr-1" aria-hidden="true"></span>
+                        }
+                        Deactivate
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+            @empty {
+              <tr>
+                <td colspan="7" class="px-6 py-12 text-center text-slate-400 text-sm">No accounts found.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (totalPages() > 1) {
+        <div class="px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p class="text-xs text-slate-400">
+            Page {{ currentPage() + 1 }} of {{ totalPages() }} &mdash; {{ totalElements() }} total
+          </p>
+          <div class="flex items-center gap-1">
+            <button
+              (click)="goToPage(currentPage() - 1)"
+              [disabled]="currentPage() === 0"
+              class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              aria-label="Previous page"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            @for (page of pages(); track page) {
+              <button
+                (click)="goToPage(page)"
+                class="w-8 h-8 rounded-lg text-sm font-medium transition-colors"
+                [class.bg-[#5802f7]]="currentPage() === page"
+                [class.text-white]="currentPage() === page"
+                [class.text-slate-600]="currentPage() !== page"
+                [class.hover:bg-slate-100]="currentPage() !== page"
+              >{{ page + 1 }}</button>
+            }
+            <button
+              (click)="goToPage(currentPage() + 1)"
+              [disabled]="currentPage() === totalPages() - 1"
+              class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              aria-label="Next page"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>
