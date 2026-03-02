@@ -7,6 +7,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.lakroune.backend.dto.request.LoginRequest;
 import com.lakroune.backend.dto.request.RegisterRequest;
@@ -23,6 +24,7 @@ import com.lakroune.backend.security.JwtUtil;
 import com.lakroune.backend.security.TokenBlacklistService;
 import com.lakroune.backend.service.IAccountService;
 import com.lakroune.backend.service.IAuthService;
+import com.lakroune.backend.service.IProfileService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -37,6 +39,7 @@ public class AuthServiceImpl implements IAuthService {
     private final TokenBlacklistService tokenBlacklistService;
     private EmailService emailService;
     private final IAccountService accountService;
+    private final IProfileService profileService;
 
     @Override
     public LoginResponse login(LoginRequest request) {
@@ -56,6 +59,7 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     @Override
+    @Transactional
     public UserResponse register(RegisterRequest request) {
         User user = userMapper.toEntity(request);
         if (userRepository.existsByEmail(user.getEmail())) {
@@ -65,10 +69,12 @@ public class AuthServiceImpl implements IAuthService {
         User userSaved = userRepository.save(user);
         
         accountService.save(userSaved.getId());
-      
+        
+        profileService.saveProfileForNewUser(userSaved.getId(), request);
 
         return userMapper.toResponse(userSaved);
     }
+
     @Override
     public Map<String, String> logout(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");

@@ -2,12 +2,10 @@ package com.lakroune.backend.controller;
 
 import java.util.Map;
 
+import com.lakroune.backend.service.IAdminService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.lakroune.backend.dto.request.LoginRequest;
 import com.lakroune.backend.dto.request.RegisterRequest;
@@ -25,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
     private final IAuthService authService;
-
+    private final IAdminService adminService;
     @PostMapping("/signup")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
@@ -39,5 +37,9 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.logout(request));
+    }
+    @GetMapping("signup")
+    public Object st(){
+       return adminService.userStatisticss();
     }
 }
