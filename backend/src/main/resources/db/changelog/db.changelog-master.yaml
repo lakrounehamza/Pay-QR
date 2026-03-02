@@ -38,4 +38,7 @@ databaseChangeLog:
   - include:
       file: 13-repair-enterprise-uuid-format.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 14-add-qr-code-image-url.yaml
+      relativeToChangelogFile: true
 

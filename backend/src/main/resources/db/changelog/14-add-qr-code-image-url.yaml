@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 14
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        and:
+          - tableExists:
+              tableName: qr_code
+          - not:
+              columnExists:
+                tableName: qr_code
+                columnName: qr_code_image_url
+      changes:
+        - addColumn:
+            tableName: qr_code
+            columns:
+              - column:
+                  name: qr_code_image_url
+                  type: VARCHAR(500)
