@@ -11,7 +11,10 @@ import com.lakroune.backend.enums.UserRole;
 import com.lakroune.backend.exception.NotFoundException;
 import com.lakroune.backend.mapper.AccountMapper;
 import com.lakroune.backend.repository.AccountRepository;
+import com.lakroune.backend.repository.UserRepository;
 import com.lakroune.backend.service.IAccountService;
+import com.lakroune.backend.service.IBlacklistedRefAccountService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,18 +24,20 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
-
+@AllArgsConstructor
 public class AccountServiceImpl implements IAccountService {
 
-    private AccountRepository accountRepository;
-    private BlacklistedRefAccount blacklistedRefAccount;
-    private AccountMapper accountMapper;
+    private final AccountRepository accountRepository;
+    private final IBlacklistedRefAccountService blacklistedRefAccount;
+    private final AccountMapper accountMapper;
+    private final UserRepository  userRepository;
 
     @Override
-    public AccountResponse save(User user) {
+    public AccountResponse save(UUID userId) {
+
+        User  user = userRepository.findById(userId).orElseThrow(()->new  NotFoundException("Not Fount User"));
         Account account = Account.builder()
-                .ref(blacklistedRefAccount.getRefAccount())
+                .ref(blacklistedRefAccount.addReferenceAccount())
                 .solde(BigDecimal.ZERO)
                 .createdAt(LocalDateTime.now())
                 .status(CompteStatus.ACTIVE)
@@ -40,7 +45,7 @@ public class AccountServiceImpl implements IAccountService {
                 .ownerType(user.getRole() == UserRole.USER ? OwnerType.USER : OwnerType.ENTERPRISE)
                 .build();
         Account accountSaved = accountRepository.save(account);
-        return accountMapper.toResponse(accountSaved);
+        return accountMapper.toResponse(account);
     }
 
     @Override

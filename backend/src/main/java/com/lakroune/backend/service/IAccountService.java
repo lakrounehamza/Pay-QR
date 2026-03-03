@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IAccountService {
-    AccountResponse save(User user);
+    AccountResponse save(UUID userId);
     List<AccountResponse>  getAllAccount();
     AccountResponse getAccountById(UUID id);
     AccountResponse updateAccount(UUID accountId , UpdateAccountRequest request);
