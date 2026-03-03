@@ -26,13 +26,13 @@ public class CinAnalysisController {
       @PostMapping("/analyze")
     public ResponseEntity<Map<String, Object>> analyzeCin(
             @Valid @RequestBody ImageAnalysisRequest request) {
-        log.info("CIN analysis request for URL: {}", request.getImageUrl());
+        log.info("CIN analysis request for URL: {}", request.imageUrl());
         try {
-            byte[] imageBytes = imageAnalysisService.downloadImage(request.getImageUrl());
+            byte[] imageBytes = imageAnalysisService.downloadImage(request.imageUrl());
             Map<String, String> result = ollamaAiService.analyzeCinWithOllama(imageBytes);
 
             Map<String, Object> response = new HashMap<>(result);
-            response.put("imageUrl", request.getImageUrl());
+            response.put("imageUrl", request.imageUrl());
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
