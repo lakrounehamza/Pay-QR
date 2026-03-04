@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import java.util.Date;
 
 public record RegisterRequest (
         @NotBlank(message = "Email is required")
@@ -27,6 +28,12 @@ public record RegisterRequest (
         @NotNull(message = "Role is required")
         UserRole role,
 
-        String enterpriseId
+        String enterpriseId,
+
+        @NotBlank(message = "CIN is required")
+        String cin,
+        Date dateNaissance,
+        String documentType,
+        String documentImageUrl
 ){
 }
