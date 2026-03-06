@@ -1,0 +1,122 @@
+﻿<div class="min-h-screen flex items-center justify-center p-4 py-10 otp-page">
+
+  
+  @if (sending()) {
+    <div class="text-center">
+      <div class="spinner-ring"></div>
+      <p class="text-gray-500 mt-3 text-sm">Sending OTP…</p>
+    </div>
+  }
+
+  @if (!sending()) {
+    <div class="w-full max-w-sm">
+
+      
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 otp-icon-wrap rounded-2xl mb-4 shadow-lg">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-800 mb-1">Enter OTP Code</h1>
+        @if (maskedPhone()) {
+          <p class="text-sm text-gray-500">
+            Code sent to <span class="font-semibold text-violet-600">{{ maskedPhone() }}</span>
+          </p>
+        } @else {
+          <p class="text-sm text-gray-500">A 6-digit code was sent to your phone.</p>
+        }
+      </div>
+
+      
+      <div class="bg-white rounded-3xl shadow-xl p-6">
+
+        
+        @if (verified()) {
+          <div class="status-success flex items-center gap-3 mb-5">
+            <div class="w-9 h-9 bg-emerald-500 rounded-full flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <p class="text-emerald-800 font-semibold text-sm">{{ success() }}</p>
+          </div>
+        }
+
+        
+        @if (error()) {
+          <div class="status-error flex items-center gap-3 mb-5">
+            <div class="w-9 h-9 bg-red-500 rounded-full flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </div>
+            <p class="text-red-800 font-semibold text-sm">{{ error() }}</p>
+          </div>
+        }
+
+        
+        <div class="flex gap-2 justify-center mb-6" (paste)="onPaste($event)">
+          @for (d of digits(); track $index) {
+            <input
+              type="text"
+              inputmode="numeric"
+              maxlength="1"
+              class="otp-digit"
+              [class.filled]="d !== ''"
+              [value]="d"
+              (input)="onInput($event, $index)"
+              (keydown)="onKeyDown($event, $index)"
+              [disabled]="verified()"
+              aria-label="Digit {{ $index + 1 }}"
+            />
+          }
+        </div>
+
+        
+        <div class="text-center mb-5">
+          <p class="text-sm text-gray-500">
+            Time remaining:
+            <span class="font-bold"
+                  [class.text-violet-600]="!timerExpired()"
+                  [class.text-red-500]="timerExpired()">
+              {{ timerDisplay() }}
+            </span>
+          </p>
+          <div class="progress-track mt-2">
+            <div class="progress-fill" [style.width]="progressWidth()"></div>
+          </div>
+        </div>
+
+        
+        <button
+          class="btn-verify mb-4"
+          (click)="verify()"
+          [disabled]="code().length < 6 || verifying() || verified() || timerExpired()"
+        >
+          @if (verifying()) {
+            <span class="spinner-inline"></span> Verifying…
+          } @else {
+            Verify Code
+          }
+        </button>
+
+        
+        <div class="text-center">
+          <p class="text-sm text-gray-500 mb-1">Didn't receive the code?</p>
+          <button
+            class="text-sm font-semibold hover:text-violet-700 transition-colors"
+            [class.text-violet-600]="timerExpired()"
+            [class.text-gray-400]="!timerExpired()"
+            [disabled]="!timerExpired() || verifying()"
+            (click)="resendOtp()"
+          >
+            @if (timerExpired()) { Resend Code } @else { Available in {{ timerDisplay() }} }
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+</div>
