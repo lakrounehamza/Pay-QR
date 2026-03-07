@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 08
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        and:
+          - not:
+              tableExists:
+                tableName: ticket_paiement
+      changes:
+        - createTable:
+            tableName: ticket_paiement
+            columns:
+              - column:
+                  name: id
+                  type: VARCHAR(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: owner_type
+                  type: VARCHAR(50)
+              - column:
+                  name: solde
+                  type: DECIMAL(19,2)
+              - column:
+                  name: date_expiration
+                  type: DATETIME
+              - column:
+                  name: is_used
+                  type: BOOLEAN
+              - column:
+                  name: created_at
+                  type: VARCHAR(255)

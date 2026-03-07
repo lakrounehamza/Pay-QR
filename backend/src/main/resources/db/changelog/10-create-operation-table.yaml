@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 10
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        and:
+          - not:
+              tableExists:
+                tableName: operation
+      changes:
+        - createTable:
+            tableName: operation
+            columns:
+              - column:
+                  name: id
+                  type: VARCHAR(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(50)
+              - column:
+                  name: amount
+                  type: DECIMAL(19,2)
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  name: source_account_id
+                  type: VARCHAR(36)
+              - column:
+                  name: destination_account_id
+                  type: VARCHAR(36)
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: ticket_paiement_id
+                  type: VARCHAR(36)
+              - column:
+                  name: qr_code_id
+                  type: VARCHAR(36)

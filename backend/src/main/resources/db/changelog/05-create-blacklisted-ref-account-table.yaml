@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: 05
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        and:
+          - not:
+              tableExists:
+                tableName: blacklisted_ref_account
+      changes:
+        - createTable:
+            tableName: blacklisted_ref_account
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: ref_account
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false

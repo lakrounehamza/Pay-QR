@@ -1,6 +1,10 @@
 spring:
   application:
     name: backend
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3307/pyqr}
     username: ${DB_USERNAME:username}
@@ -8,11 +12,14 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
@@ -43,6 +50,41 @@ jwt:
   expiration: ${JWT_EXPIRATION:86400000}
 
 cloudinary:
-  cloud-name: ${CLOUDINARY_CLOUD_NAME}
-  api-key: ${CLOUDINARY_API_KEY}
-  api-secret: ${CLOUDINARY_API_SECRET}
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:dev-cloud}
+  api-key: ${CLOUDINARY_API_KEY:dev-key}
+  api-secret: ${CLOUDINARY_API_SECRET:dev-secret}
+
+# ==========================================
+# Ollama AI Configuration (Local LLM/Vision)
+# ==========================================
+ollama:
+  api:
+    url: ${OLLAMA_URL:http://localhost:11434}
+  # Options: llava:7b | llava:13b | llava:34b | bakllava:7b
+  model: ${OLLAMA_MODEL:llava:7b}
+  timeout: 120000
+  enabled: true
+
+stripe:
+  secret-key: ${STRIPE_SECRET_KEY:sk_test_51QzzOwDBBIPP3WR4y4K8egHEmzkqdhBqMhkDHP5VkCeyr5k9PTxXtmNere6U7m1Ngnvnw5FdR3nAP1lU16lXOYgj00ZoCFfi9z}
+  public-key: ${STRIPE_PUBLIC_KEY:pk_test_51QzzOwDBBIPP3WR4TTMOI7oHpsFPLosWDaQ8qBKZgEe0C7bwWZw38bAS1tC87rAgV4VkX8CZS5CinaJZBJ2e01MA00SVTmJkbV}
+  currency: ${STRIPE_CURRENCY:eur}
+
+sms:
+  # Provider: "console" (logs only), "twilio" (real SMS), or "ovh" (real SMS)
+  provider: ${SMS_PROVIDER:twilio}
+
+  # Dev mode: true = print in logs only, false = send real SMS
+  dev-mode: ${SMS_DEV_MODE:false}
+
+  # Sender name shown on recipient's phone (max 11 alphanumeric chars)
+  sender: ${SMS_SENDER:PayQR}
+
+  # Twilio configuration
+  twilio:
+    account-sid: ${TWILIO_ACCOUNT_SID:AC0cf11c8bf84bfb465a93991e831c403e}
+    auth-token: ${TWILIO_AUTH_TOKEN:8d14b5d7928f2d3340990b09f9ea2c50}
+    phone-number: ${TWILIO_PHONE_NUMBER:+16205665307}
+
+otp:
+  expiration-minutes: ${OTP_EXPIRATION_MINUTES:5}

@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: 07
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        and:
+          - not:
+              tableExists:
+                tableName: otp_code
+      changes:
+        - createTable:
+            tableName: otp_code
+            columns:
+              - column:
+                  name: id
+                  type: VARCHAR(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: VARCHAR(255)
+              - column:
+                  name: expiration_date
+                  type: DATETIME
+              - column:
+                  name: used
+                  type: BOOLEAN
+              - column:
+                  name: user_id
+                  type: VARCHAR(36)

@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 03
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        and:
+          - not:
+              tableExists:
+                tableName: account
+      changes:
+        - createTable:
+            tableName: account
+            columns:
+              - column:
+                  name: id
+                  type: VARCHAR(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: ref
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: owner_type
+                  type: VARCHAR(50)
+              - column:
+                  name: solde
+                  type: DECIMAL(19,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  name: user_id
+                  type: VARCHAR(36)
+              - column:
+                  name: created_at
+                  type: DATETIME

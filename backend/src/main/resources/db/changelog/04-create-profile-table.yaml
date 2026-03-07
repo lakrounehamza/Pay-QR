@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 04
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        and:
+          - not:
+              tableExists:
+                tableName: profile
+      changes:
+        - createTable:
+            tableName: profile
+            columns:
+              - column:
+                  name: id
+                  type: VARCHAR(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: cin
+                  type: VARCHAR(100)
+              - column:
+                  name: date_naissance
+                  type: DATE
+              - column:
+                  name: document_type
+                  type: VARCHAR(50)
+              - column:
+                  name: document_image_url
+                  type: VARCHAR(255)
+              - column:
+                  name: verification_status
+                  type: VARCHAR(50)
+              - column:
+                  name: user_id
+                  type: VARCHAR(36)
+                  constraints:
+                    unique: true
