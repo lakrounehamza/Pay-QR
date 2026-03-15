@@ -90,6 +90,16 @@ export class UserService {
     return this.http.post<OperationModel>(`${this.api}/operation`, payload);
   }
 
+  markQrCodeAsUsed(qrCodeId: string): Observable<QrResponse> {
+    return this.http.put<QrResponse>(`${this.api}/qr/mark-used`, { qrCodeId });
+  }
+
+  downloadPaymentTicketPdf(operationId: string): Observable<Blob> {
+    return this.http.get(`${this.api}/operation/download-ticket/${operationId}`, {
+      responseType: 'blob',
+    });
+  }
+
 
   sendOtp(email: string): Observable<OtpSendResponse> {
     return this.http.post<OtpSendResponse>(`${this.api}/otp/send`, { email });

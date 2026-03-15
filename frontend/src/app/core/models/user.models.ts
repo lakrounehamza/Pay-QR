@@ -64,4 +64,5 @@ export interface QrResponse {
   expediteurNom: string;
   expediteurPrenom: string;
   isUsed: boolean;
+  qrCodeImage?: string;
 }

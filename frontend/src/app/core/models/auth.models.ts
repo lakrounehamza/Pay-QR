@@ -8,6 +8,10 @@ export interface RegisterRequest {
   password: string;
   role: UserRole;
   enterpriseId?: string;
+  cin: string;
+  dateNaissance?: string;
+  documentType?: string;
+  documentImageUrl?: string;
 }
 
 export interface LoginRequest {
