@@ -82,7 +82,7 @@
             <label class="block text-sm font-semibold text-gray-700 mb-2">Amount (MAD)</label>
             <input
               [(ngModel)]="generateAmount"
-              (ngModelChange)="generateError = ''"
+              (ngModelChange)="generateError.set('')"
               placeholder="0.00"
               type="number"
               min="0.01"
@@ -90,18 +90,18 @@
               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-400 transition-colors text-sm"
               style="background:#fafafa;"
             />
-            @if (generateError) {
-              <p class="text-red-500 text-xs mt-1">{{ generateError }}</p>
+            @if (generateError()) {
+              <p class="text-red-500 text-xs mt-1">{{ generateError() }}</p>
             }
           </div>
 
           
           <button
             (click)="generateQr()"
-            [disabled]="generating"
+            [disabled]="generating()"
             class="w-full py-3 rounded-xl font-bold text-white text-sm mb-5 transition-all hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-60 flex items-center justify-center gap-2"
             style="background:linear-gradient(135deg,#3b82f6,#6366f1);">
-            @if (generating) {
+            @if (generating()) {
               <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
@@ -113,7 +113,7 @@
           </button>
 
           
-          @if (generating) {
+          @if (generating()) {
             <div class="flex flex-col items-center justify-center py-10 gap-3">
               <div class="relative w-14 h-14">
                 <div class="absolute inset-0 rounded-full border-4 border-indigo-100"></div>
@@ -124,13 +124,19 @@
           }
 
           
-          @if (generatedQr && !generating) {
-            <div class="mb-5">
-              <div class="rounded-2xl p-6 flex flex-col items-center"
-                   style="background:linear-gradient(135deg,#f8fafc,#f1f5f9);">
-                <div class="bg-white p-4 rounded-xl shadow-lg" #qrCanvas>
+          @if (generatedQr() && !generating()) {
+            <div class="qr-container mb-5">
+              <div class="qr-image-wrapper">
+                @if (generatedQr()!.qrCodeImage) {
+                  <img
+                    [src]="generatedQr()!.qrCodeImage"
+                    alt="Payment QR code"
+                    (load)="console.log('[IMG LOADED] ✓ QR Image successfully loaded')"
+                    (error)="console.error('[IMG ERROR] ✗ Failed to load QR image')"
+                  />
+                } @else {
                   <qrcode
-                    [qrdata]="generatedQr.rqId"
+                    [qrdata]="generatedQr()!.rqId"
                     [width]="208"
                     [margin]="2"
                     [errorCorrectionLevel]="'M'"
@@ -138,20 +144,37 @@
                     [colorLight]="'#ffffff'"
                     elementType="canvas"
                   />
-                </div>
-                <p class="text-xs text-gray-400 mt-3">Scan to receive {{ generateAmount }} MAD</p>
-                <p class="text-xs text-indigo-400 mt-1 font-mono">{{ generatedQr.expediteurPrenom }} {{ generatedQr.expediteurNom }}</p>
+                  <p class="text-xs text-yellow-600">Using fallback canvas component</p>
+                }
               </div>
+
+              <div class="qr-info">
+                <p class="text-sm font-bold text-gray-800">
+                   Montant: <span class="text-indigo-600">{{ generateAmount }} MAD</span>
+                </p>
+                <p class="text-xs text-gray-600">
+                   De: <span class="font-semibold">{{ generatedQr()!.expediteurPrenom }} {{ generatedQr()!.expediteurNom }}</span>
+                </p>                
+
+                <div class="qr-status">
+                  @if (!generatedQr()!.isUsed) {
+                    <div class="qr-status-badge">✓ Non utilisé</div>
+                  } @else {
+                    <div class="qr-status-badge qr-error">✗ Déjà utilisé</div>
+                  }
+                </div>
+              </div>
+
               <button
                 (click)="downloadQr()"
                 class="w-full mt-3 py-3 rounded-xl font-bold text-white text-sm"
                 style="background:linear-gradient(135deg,#3b82f6,#6366f1);">
-                ⬇ Download QR
+                ⬇ Télécharger le QR
               </button>
             </div>
           }
 
-          @if (!generatedQr && !generating) {
+          @if (!generatedQr() && !generating()) {
             <div class="text-center py-10">
               <svg class="w-20 h-20 mx-auto text-gray-200 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -294,15 +317,23 @@
 
               @if (paySuccess()) {
                 
-                <div class="flex flex-col items-center py-4 gap-2">
+                <div class="flex flex-col items-center py-4 gap-3">
                   <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
                     <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                     </svg>
                   </div>
                   <p class="font-bold text-green-700 text-sm">Payment Successful!</p>
+
+                  <button
+                    (click)="downloadPaymentTicket()"
+                    class="w-full mt-2 py-2.5 rounded-xl font-bold text-white text-sm transition-all hover:shadow-lg hover:-translate-y-0.5"
+                    style="background:linear-gradient(135deg,#10b981,#059669);">
+                    📄 Download Receipt
+                  </button>
+
                   <button (click)="clearResult()"
-                          class="mt-2 text-xs text-indigo-500 hover:text-indigo-700 font-semibold underline">
+                          class="mt-1 text-xs text-indigo-500 hover:text-indigo-700 font-semibold underline">
                     Scan another QR
                   </button>
                 </div>
@@ -314,7 +345,6 @@
                   </div>
                 }
 
-                
                 @if (!decodedQr()!.isUsed) {
                   <button
                     (click)="confirmPayment()"
@@ -330,6 +360,27 @@
                       Confirm Payment · {{ decodedQr()!.amount | number:'1.2-2' }} MAD
                     }
                   </button>
+
+                  <button
+                    (click)="markQrAsUsed()"
+                    [disabled]="markingAsUsed()"
+                    class="w-full mt-3 py-3 rounded-xl font-bold text-white text-sm transition-all hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-60"
+                    style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);">
+                    @if (markingAsUsed()) {
+                      <span class="flex items-center justify-center gap-2">
+                        <span class="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin"></span>
+                        Marking…
+                      </span>
+                    } @else {
+                      ✓ Mark QR Code as Used
+                    }
+                  </button>
+
+                  @if (markUsedError()) {
+                    <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 mt-3">
+                      <p class="text-red-700 text-xs font-semibold">{{ markUsedError() }}</p>
+                    </div>
+                  }
                 }
               }
             </div>

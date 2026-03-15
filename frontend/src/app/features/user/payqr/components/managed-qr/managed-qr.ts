@@ -21,6 +21,8 @@ export class ManagedQR implements OnInit {
   private readonly userSvc   = inject(UserService);
   private readonly tokenSvc  = inject(TokenService);
 
+  console = console;
+
   @ViewChild('qrCanvas', { static: false }) qrCanvas!: ElementRef<HTMLElement>;
 
   menuOpen = signal(false);
@@ -63,11 +65,15 @@ export class ManagedQR implements OnInit {
   paying     = signal(false);
   payError   = signal('');
   paySuccess = signal(false);
+  lastOperationId = signal<string | null>(null);
+
+  markingAsUsed = signal(false);
+  markUsedError = signal('');
 
   generateAmount = '';
-  generatedQr: QrResponse | null = null;
-  generating    = false;
-  generateError = '';
+  generatedQr = signal<QrResponse | null>(null);
+  generating = signal(false);
+  generateError = signal('');
 
   toastMessage = '';
   toastVisible = false;
@@ -113,6 +119,7 @@ export class ManagedQR implements OnInit {
 
   onScanSuccess(result: string): void {
     if (result === this.scannedResult) return;
+    console.log('[QR DEBUG] QR Code scanned:', result);
     this.scannedResult  = result;
     this.scannerEnabled = false;
     this.decodedQr.set(null);
@@ -133,13 +140,23 @@ export class ManagedQR implements OnInit {
   }
 
   private fetchQrDetails(qrId: string): void {
+    console.log('[QR DEBUG] Fetching QR details for ID:', qrId);
     this.decoding.set(true);
     this.userSvc.getQrById(qrId).subscribe({
       next: (qr) => {
+        console.log('[QR DEBUG] QR Details retrieved:', {
+          rqId: qr.rqId,
+          amount: qr.amount,
+          expediteur: `${qr.expediteurPrenom} ${qr.expediteurNom}`,
+          expediteurAccountId: qr.expediteurAccountId,
+          isUsed: qr.isUsed,
+          qrCodeImage: qr.qrCodeImage
+        });
         this.decodedQr.set(qr);
         this.decoding.set(false);
       },
-      error: () => {
+      error: (err) => {
+        console.error('[QR DEBUG] Error fetching QR details:', err);
         this.decodeError.set('QR code not found or invalid.');
         this.decoding.set(false);
       },
@@ -149,10 +166,26 @@ export class ManagedQR implements OnInit {
   confirmPayment(): void {
     const qr    = this.decodedQr();
     const accId = this.accountId();
-    if (!qr || !accId) return;
+    if (!qr || !accId) { console.error('[QR DEBUG] Cannot confirm payment: QR or Account missing'); return; }
 
-    if (qr.isUsed) { this.payError.set('This QR code has already been used.'); return; }
-    if (qr.expediteurAccountId === accId) { this.payError.set('Cannot pay yourself.'); return; }
+    if (qr.isUsed) { 
+      console.warn('[QR DEBUG] QR Code already used');
+      this.payError.set('This QR code has already been used.'); 
+      return; 
+    }
+    if (qr.expediteurAccountId === accId) { 
+      console.warn('[QR DEBUG] Cannot pay to yourself');
+      this.payError.set('Cannot pay yourself.'); 
+      return; 
+    }
+
+    console.log('[QR DEBUG] Confirming payment:', {
+      type: 'PAYMENT',
+      amount: qr.amount,
+      sourceAccountId: accId,
+      destinationAccountId: qr.expediteurAccountId,
+      qrCodeId: qr.rqId
+    });
 
     this.paying.set(true);
     this.payError.set('');
@@ -164,13 +197,27 @@ export class ManagedQR implements OnInit {
       destinationAccountId: qr.expediteurAccountId,
       qrCodeId: qr.rqId,
     }).subscribe({
-      next: () => {
+      next: (operation) => {
+        console.log('[QR DEBUG] Payment successful!', operation);
         this.paying.set(false);
         this.paySuccess.set(true);
+        this.lastOperationId.set(operation.id);
         this.userSvc.getAccount(accId).subscribe(acc => this.account.set(acc));
+        
+        this.userSvc.markQrCodeAsUsed(qr.rqId).subscribe({
+          next: (updatedQr) => {
+            console.log('[QR DEBUG] QR Code automatically marked as used after payment');
+            this.decodedQr.set(updatedQr);
+          },
+          error: (err) => {
+            console.warn('[QR DEBUG] Could not auto-mark QR code as used:', err);
+          }
+        });
+        
         this.showToast('Payment successful!');
       },
       error: (err) => {
+        console.error('[QR DEBUG] Payment error:', err);
         this.paying.set(false);
         this.payError.set(err?.error?.message ?? 'Payment failed. Try again.');
       },
@@ -180,42 +227,124 @@ export class ManagedQR implements OnInit {
   generateQr(): void {
     const amount = parseFloat(this.generateAmount);
     if (!this.generateAmount || isNaN(amount) || amount <= 0) {
-      this.generateError = 'Enter a valid amount (> 0).';
+      this.generateError.set('Enter a valid amount (> 0).');
+      console.error('[QR DEBUG] Invalid amount:', this.generateAmount);
       return;
     }
     const accId = this.accountId();
-    if (!accId) { this.generateError = 'No account found.'; return; }
+    if (!accId) { this.generateError.set('No account found.'); console.error('[QR DEBUG] No account ID found'); return; }
 
-    this.generating    = true;
-    this.generateError = '';
-    this.generatedQr   = null;
+    console.log('[QR DEBUG] Starting QR generation with amount:', amount, 'Account ID:', accId);
+    this.generating.set(true);
+    this.generateError.set('');
+    this.generatedQr.set(null);
 
     this.userSvc.generatePaymentQr(amount, accId).subscribe({
       next: (qr) => {
-        this.generatedQr = qr;
-        this.generating  = false;
+        console.log('[QR DEBUG] QR Code generated successfully:', {
+          rqId: qr.rqId,
+          amount: qr.amount,
+          expediteur: `${qr.expediteurPrenom} ${qr.expediteurNom}`,
+          imageUrl: qr.qrCodeImage,
+          imageUrlLength: qr.qrCodeImage?.length,
+          isUsed: qr.isUsed
+        });
+        this.generatedQr.set(qr);
+        this.generating.set(false);
         this.showToast('Payment QR generated!');
       },
-      error: () => {
-        this.generateError = 'Failed to generate QR. Try again.';
-        this.generating    = false;
+      error: (err) => {
+        console.error('[QR DEBUG] Error generating QR:', err);
+        this.generateError.set('Failed to generate QR. Try again.');
+        this.generating.set(false);
       },
     });
   }
 
   downloadQr(): void {
-    const canvas = this.qrCanvas?.nativeElement?.querySelector('canvas');
-    if (!canvas) return;
+    const qr = this.generatedQr();
     const link = document.createElement('a');
-    link.href     = (canvas as HTMLCanvasElement).toDataURL('image/png');
-    link.download = `payment-qr-${this.generateAmount}-MAD.png`;
+
+    if (qr?.qrCodeImage) {
+      console.log('[QR DEBUG] Downloading QR from backend URL:', qr.qrCodeImage);
+      link.href = qr.qrCodeImage;
+      link.download = `payment-qr-${this.generateAmount}-MAD.png`;
+    } else {
+      console.log('[QR DEBUG] No backend image URL, using canvas');
+      const canvas = this.qrCanvas?.nativeElement?.querySelector('canvas');
+      if (!canvas) { console.error('[QR DEBUG] Canvas not found'); return; }
+      link.href = (canvas as HTMLCanvasElement).toDataURL('image/png');
+      link.download = `payment-qr-${this.generateAmount}-MAD.png`;
+    }
+
     link.click();
+    console.log('[QR DEBUG] QR download initiated');
     this.showToast('QR downloaded!');
+  }
+
+  markQrAsUsed(): void {
+    const qr = this.decodedQr();
+    if (!qr) { 
+      console.error('[QR DEBUG] No QR code to mark as used');
+      this.markUsedError.set('No QR code selected.'); 
+      return; 
+    }
+
+    if (qr.isUsed) { 
+      console.warn('[QR DEBUG] QR Code is already marked as used');
+      this.markUsedError.set('This QR code has already been marked as used.'); 
+      return; 
+    }
+
+    console.log('[QR DEBUG] Marking QR code as used:', qr.rqId);
+    this.markingAsUsed.set(true);
+    this.markUsedError.set('');
+
+    this.userSvc.markQrCodeAsUsed(qr.rqId).subscribe({
+      next: (updatedQr) => {
+        console.log('[QR DEBUG] QR Code successfully marked as used:', updatedQr);
+        this.markingAsUsed.set(false);
+        this.decodedQr.set(updatedQr);
+        this.showToast('QR code marked as used!');
+      },
+      error: (err) => {
+        console.error('[QR DEBUG] Error marking QR as used:', err);
+        this.markingAsUsed.set(false);
+        this.markUsedError.set(err?.error?.message ?? 'Failed to mark QR code as used. Try again.');
+      },
+    });
   }
 
   showToast(msg: string): void {
     this.toastMessage = msg;
     this.toastVisible = true;
     setTimeout(() => (this.toastVisible = false), 2800);
+  }
+
+  downloadPaymentTicket(): void {
+    const operationId = this.lastOperationId();
+    if (!operationId) {
+      console.error('[QR DEBUG] No operation ID to download ticket');
+      this.showToast('No payment to download');
+      return;
+    }
+
+    console.log('[QR DEBUG] Downloading payment ticket for operation:', operationId);
+    this.userSvc.downloadPaymentTicketPdf(operationId).subscribe({
+      next: (blob: Blob) => {
+        const link = document.createElement('a');
+        const url = window.URL.createObjectURL(blob);
+        link.href = url;
+        link.download = `payment-receipt-${operationId}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        console.log('[QR DEBUG] Payment ticket downloaded successfully');
+        this.showToast('Ticket downloaded!');
+      },
+      error: (err) => {
+        console.error('[QR DEBUG] Error downloading ticket:', err);
+        this.showToast('Failed to download ticket');
+      },
+    });
   }
 }
