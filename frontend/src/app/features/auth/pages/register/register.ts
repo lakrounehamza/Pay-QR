@@ -19,7 +19,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
   return pw.value !== cpw.value ? { passwordMismatch: true } : null;
 }
 
-type Step = 1 | 2 | 3;
+type Step = 1 | 2 | 3 | 4;
 
 @Component({
   selector: 'app-register',
@@ -70,7 +70,7 @@ export class Register {
   }
 
   progressWidth = computed(() => {
-    const map: Record<Step, string> = { 1: '33%', 2: '66%', 3: '100%' };
+    const map: Record<Step, string> = { 1: '25%', 2: '50%', 3: '75%', 4: '100%' };
     return map[this.currentStep()];
   });
 
@@ -84,7 +84,11 @@ export class Register {
     this.currentStep.set(2);
   }
 
-  back() { this.currentStep.set(1); }
+  back() {
+    if (this.currentStep() > 1) {
+      this.currentStep.set((this.currentStep() - 1) as Step);
+    }
+  }
 
   onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -129,6 +133,7 @@ export class Register {
             const enteredPrenom = prenom.trim().toUpperCase();
 
             const nomMatch    = this.fuzzyMatch(cinNom,    enteredNom,    2);
+              this.currentStep.set(3);
             const prenomMatch = this.fuzzyMatch(cinPrenom, enteredPrenom, 2);
 
             if (nomMatch && prenomMatch) {
@@ -155,23 +160,51 @@ export class Register {
     });
   }
 
-  
-  createAccount() {
-    if (!this.cinVerified()) { this.errorMsg.set('Please verify your identity first.'); return; }
+  proceedToConfirmation() {
+    if (!this.cinVerified()) {
+      this.errorMsg.set('Please verify your identity first.');
+      return;
+    }
+    this.errorMsg.set(null);
+  }
+
+  submitAccount() {
+    if (!this.cinVerified()) {
+      this.errorMsg.set('Please verify your identity first.');
+      return;
+    }
 
     const { nom, prenom, telephone, email, password } =
       this.personalForm.value as PersonalInfoFormData;
+    const cinData = this.cinAnalysis();
+    
+    if (!cinData || !cinData.numeroCIN) {
+      this.errorMsg.set('CIN number could not be extracted. Please verify your identity again.');
+      return;
+    }
 
     this.isLoading.set(true);
     this.errorMsg.set(null);
 
+    const dateNaissance = this.formatDateToISO(cinData.dateNaissance);
     this.authSvc
-      .register({ nom, prenom, telephone, email, password, role: 'USER' })
+      .register({
+        nom,
+        prenom,
+        telephone,
+        email,
+        password,
+        role: 'USER',
+        cin: cinData.numeroCIN,
+        dateNaissance,
+        documentType: cinData['documentType'] || 'ID_CARD',
+        documentImageUrl: cinData.imageUrl,
+      })
       .subscribe({
         next: (user) => {
           this.isLoading.set(false);
           this.createdUserEmail.set(user.email);
-          this.currentStep.set(3);
+          this.currentStep.set(4);
         },
         error: (err) => {
           this.isLoading.set(false);
@@ -181,6 +214,16 @@ export class Register {
   }
 
   goToLogin() { this.router.navigate(['/auth/login']); }
+
+  private formatDateToISO(dateStr: string | undefined): string | undefined {
+    if (!dateStr) return undefined;
+    const parts = dateStr.split('/');
+    if (parts.length === 3) {
+      const [day, month, year] = parts;
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+    return dateStr;
+  }
 
    private fuzzyMatch(a: string, b: string, threshold: number): boolean {
     if (a === b) return true;

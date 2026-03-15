@@ -37,6 +37,7 @@ export class EnterpriseService {
       password:     dto.password,
       role:         dto.role,
       enterpriseId: dto.enterpriseId,
+      cin:          dto.cin || '',
     };
     return this.http.post<EnterpriseUser>(`${this.base(enterpriseId)}/users`, body);
   }
