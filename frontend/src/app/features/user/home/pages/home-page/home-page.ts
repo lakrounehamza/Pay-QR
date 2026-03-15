@@ -4,10 +4,11 @@ import { Router } from '@angular/router';
 import { UserService } from '../../../../../core/services/user.service';
 import { TokenService } from '../../../../../core/services/token.service';
 import { AccountModel, OperationModel } from '../../../../../core/models/user.models';
+import { NavBar } from '../../../layout/nav-bar/nav-bar';
 
 @Component({
   selector: 'app-home-page',
-  imports: [DatePipe, DecimalPipe],
+  imports: [DatePipe, DecimalPipe, NavBar],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })

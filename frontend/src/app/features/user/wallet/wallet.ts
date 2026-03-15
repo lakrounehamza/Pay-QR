@@ -6,6 +6,7 @@ import { UserService } from '../../../core/services/user.service';
 import { TokenService } from '../../../core/services/token.service';
 import { AccountModel, OperationModel } from '../../../core/models/user.models';
 import { loadStripe, Stripe, StripeCardElement } from '@stripe/stripe-js';
+import { NavBar } from '../layout/nav-bar/nav-bar';
 
 type View = 'wallet' | 'topup' | 'withdraw' | 'success';
 
@@ -14,7 +15,7 @@ type View = 'wallet' | 'topup' | 'withdraw' | 'success';
   templateUrl: './wallet.html',
   styleUrl: './wallet.css',
   changeDetection: ChangeDetectionStrategy.Default,
-  imports: [FormsModule, DecimalPipe, DatePipe],
+  imports: [FormsModule, DecimalPipe, DatePipe,NavBar],
 })
 export class Wallet implements OnInit, OnDestroy {
   private readonly router   = inject(Router);

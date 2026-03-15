@@ -8,10 +8,11 @@ import { QRCodeComponent } from 'angularx-qrcode';
 import { UserService } from '../../../../../core/services/user.service';
 import { TokenService } from '../../../../../core/services/token.service';
 import { AccountModel, QrResponse } from '../../../../../core/models/user.models';
+import { NavBar } from '../../../layout/nav-bar/nav-bar';
 
 @Component({
   selector: 'app-managed-qr',
-  imports: [FormsModule, DecimalPipe, ZXingScannerModule, QRCodeComponent],
+  imports: [FormsModule, DecimalPipe, ZXingScannerModule, QRCodeComponent,NavBar],
   templateUrl: './managed-qr.html',
   styleUrl: './managed-qr.css',
 })
