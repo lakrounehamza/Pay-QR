@@ -1,0 +1,48 @@
+:host {
+	display: block;
+}
+
+.sidebar {
+	width: 280px;
+	min-height: 100vh;
+	background: white;
+	border-right: 1px solid #e5e7eb;
+	position: fixed;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	flex-direction: column;
+	z-index: 20;
+}
+
+.nav-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px 16px;
+	border-radius: 12px;
+	color: #6b7280;
+	font-weight: 500;
+	transition: all 0.2s;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.nav-item:hover {
+	background: #f3f4f6;
+	color: #111827;
+}
+
+.nav-item.active {
+	background: #eef2ff;
+	color: #4338ca;
+	font-weight: 600;
+}
+
+.mobile-top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 1rem;
+	padding: 1rem 1rem 0;
+}
