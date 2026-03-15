@@ -31,4 +31,6 @@ public interface IAdminService {
 
     
     StatisticsResponse getStatistics();
+
+    Object userStatisticss();
 }

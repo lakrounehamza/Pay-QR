@@ -198,4 +198,10 @@ public class AdminServiceImpl implements IAdminService {
                 totalVolume
         );
     }
+
+
+    @Override
+    public Object userStatisticss(){
+        return  userRepository.findAll();
+    }
 }
