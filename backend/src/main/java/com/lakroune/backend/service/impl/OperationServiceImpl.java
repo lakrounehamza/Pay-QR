@@ -2,6 +2,7 @@ package com.lakroune.backend.service.impl;
 
 import com.lakroune.backend.dto.request.CreateOperationRequest;
 import com.lakroune.backend.dto.response.OperationResponse;
+import com.lakroune.backend.dto.response.PaymentTicketDTO;
 import com.lakroune.backend.entity.Account;
 import com.lakroune.backend.entity.Operation;
 import com.lakroune.backend.entity.QrCode;
@@ -89,6 +90,29 @@ public class OperationServiceImpl implements IOperationService {
                 .filter(o -> Objects.equals(o.destinationAccountId(), accountId)
                           || Objects.equals(o.sourceAccountId(), accountId))
                 .toList();
+    }
+
+    public PaymentTicketDTO getPaymentTicket(UUID operationId) {
+        Operation operation = operationRepository.findById(operationId)
+                .orElseThrow(() -> new NotFoundException("Operation not found"));
+
+        String sourceUserName = operation.getAccountSource().getUser().getPrenom() + " " +
+                operation.getAccountSource().getUser().getNom();
+        String destinationUserName = operation.getAccountDestination().getUser().getPrenom() + " " +
+                operation.getAccountDestination().getUser().getNom();
+
+        return new PaymentTicketDTO(
+                operation.getId(),
+                operation.getType(),
+                operation.getAmount(),
+                operation.getStatus(),
+                operation.getAccountSource().getRef(),
+                sourceUserName,
+                operation.getAccountDestination().getRef(),
+                destinationUserName,
+                operation.getCreatedAt(),
+                operation.getQrCode() != null ? operation.getQrCode().getId() : null
+        );
     }
 
 }
