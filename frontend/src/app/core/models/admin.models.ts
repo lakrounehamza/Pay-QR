@@ -118,6 +118,7 @@ export interface CreateEnterpriseUserDto {
   role: UserRole;
   password: string;
   enterpriseId: string;
+  cin?: string;
 }
 
 export type Notification = { type: 'success' | 'error'; message: string };
