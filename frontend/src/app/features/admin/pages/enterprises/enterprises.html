@@ -87,7 +87,7 @@
                 </td>
                 <td class="px-6 py-4 text-slate-500">{{ enterprise.telephone || '—' }}</td>
                 <td class="px-6 py-4 text-slate-500">{{ enterprise.email }}</td>
-                <td class="px-6 py-4 text-slate-500">{{ enterprise.totalEmployees ?? 0 }}</td>
+                <td class="px-6 py-4 text-slate-500">{{ enterprise.totalEmployees }}</td>
                 <td class="px-6 py-4 text-slate-500">{{ enterprise.createdAt | date: 'mediumDate' }}</td>
                 <td class="px-6 py-4">
                   @if (enterprise.statut === 'ACTIVE') {
@@ -258,7 +258,7 @@
         </div>
         <div class="grid grid-cols-3 gap-2 text-sm">
           <dt class="text-slate-400 font-medium col-span-1">Employees</dt>
-          <dd class="text-[#1a1a1a] col-span-2">{{ selectedEnterprise()!.totalEmployees ?? 0 }}</dd>
+          <dd class="text-[#1a1a1a] col-span-2">{{ selectedEnterprise()!.totalEmployees }}</dd>
         </div>
         <div class="grid grid-cols-3 gap-2 text-sm">
           <dt class="text-slate-400 font-medium col-span-1">Created</dt>
