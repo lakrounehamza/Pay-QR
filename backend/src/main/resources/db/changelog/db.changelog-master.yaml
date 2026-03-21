@@ -29,3 +29,6 @@ databaseChangeLog:
   - include:
       file: 10-create-operation-table.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 11-fix-account-user-relation.yaml
+      relativeToChangelogFile: true

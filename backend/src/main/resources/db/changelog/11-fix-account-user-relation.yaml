@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 11-1
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        and:
+          - tableExists:
+              tableName: account
+          - columnExists:
+              tableName: account
+              columnName: user_id
+          - not:
+              uniqueConstraintExists:
+                tableName: account
+                constraintName: uq_account_user_id
+      changes:
+        - addUniqueConstraint:
+            tableName: account
+            columnNames: user_id
+            constraintName: uq_account_user_id
+
+  - changeSet:
+      id: 11-2
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        and:
+          - tableExists:
+              tableName: account
+          - tableExists:
+              tableName: users
+          - columnExists:
+              tableName: account
+              columnName: user_id
+          - not:
+              foreignKeyConstraintExists:
+                foreignKeyName: fk_account_user
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: account
+            baseColumnNames: user_id
+            constraintName: fk_account_user
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
