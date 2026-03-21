@@ -6,9 +6,9 @@ spring:
       max-file-size: 5MB
       max-request-size: 10MB
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3307/pyqr}
-    username: ${DB_USERNAME:username}
-    password: ${DB_PASSWORD:userpassword}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -23,8 +23,8 @@ spring:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:lakrounehamza10@gmail.com}
-    password: ${MAIL_PASSWORD:pphodrxepirbcqjn}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
 
     properties:
       mail:
@@ -46,13 +46,13 @@ management:
       show-details: when-authorized
 
 jwt:
-  secret: ${JWT_SECRET:Ys+5/eaN0bFKzDSqnnM66Zvbu3KGFaUOAmmwnj531ZeR88YTx9G1/bQM860XWaKr3+PYZdmfKdGzY6DtKC9Ieg==}
+  secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:86400000}
 
 cloudinary:
-  cloud-name: ${CLOUDINARY_CLOUD_NAME:dev-cloud}
-  api-key: ${CLOUDINARY_API_KEY:dev-key}
-  api-secret: ${CLOUDINARY_API_SECRET:dev-secret}
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
 
 # ==========================================
 # Ollama AI Configuration (Local LLM/Vision)
@@ -66,8 +66,8 @@ ollama:
   enabled: true
 
 stripe:
-  secret-key: ${STRIPE_SECRET_KEY:sk_test_51QzzOwDBBIPP3WR4y4K8egHEmzkqdhBqMhkDHP5VkCeyr5k9PTxXtmNere6U7m1Ngnvnw5FdR3nAP1lU16lXOYgj00ZoCFfi9z}
-  public-key: ${STRIPE_PUBLIC_KEY:pk_test_51QzzOwDBBIPP3WR4TTMOI7oHpsFPLosWDaQ8qBKZgEe0C7bwWZw38bAS1tC87rAgV4VkX8CZS5CinaJZBJ2e01MA00SVTmJkbV}
+  secret-key: ${STRIPE_SECRET_KEY:}
+  public-key: ${STRIPE_PUBLIC_KEY:}
   currency: ${STRIPE_CURRENCY:eur}
 
 sms:
@@ -82,9 +82,9 @@ sms:
 
   # Twilio configuration
   twilio:
-    account-sid: ${TWILIO_ACCOUNT_SID:AC0cf11c8bf84bfb465a93991e831c403e}
-    auth-token: ${TWILIO_AUTH_TOKEN:8d14b5d7928f2d3340990b09f9ea2c50}
-    phone-number: ${TWILIO_PHONE_NUMBER:+16205665307}
+    account-sid: ${TWILIO_ACCOUNT_SID:}
+    auth-token: ${TWILIO_AUTH_TOKEN:}
+    phone-number: ${TWILIO_PHONE_NUMBER:}
 
 otp:
   expiration-minutes: ${OTP_EXPIRATION_MINUTES:5}
