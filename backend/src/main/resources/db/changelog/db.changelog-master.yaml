@@ -32,3 +32,10 @@ databaseChangeLog:
   - include:
       file: 11-fix-account-user-relation.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 12-fix-uuid-types.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 13-repair-enterprise-uuid-format.yaml
+      relativeToChangelogFile: true
+

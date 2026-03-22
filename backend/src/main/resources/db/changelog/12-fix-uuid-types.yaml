@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 12-1
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        foreignKeyConstraintExists:
+          foreignKeyName: fk_account_user
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: account
+            constraintName: fk_account_user
+
+  - changeSet:
+      id: 12-2
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        tableExists:
+          tableName: account
+      changes:
+        - sql:
+            sql: SELECT 1
+
+  - changeSet:
+      id: 12-3
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        and:
+          - tableExists:
+              tableName: account
+          - tableExists:
+              tableName: users
+          - not:
+              foreignKeyConstraintExists:
+                foreignKeyName: fk_account_user
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: account
+            baseColumnNames: user_id
+            constraintName: fk_account_user
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE

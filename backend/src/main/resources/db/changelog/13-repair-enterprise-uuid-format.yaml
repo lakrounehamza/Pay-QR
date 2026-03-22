@@ -1,0 +1,97 @@
+databaseChangeLog:
+  - changeSet:
+      id: 13-0
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        columnExists:
+          tableName: enterprise
+          columnName: id_tmp_char
+      changes:
+        - dropColumn:
+            tableName: enterprise
+            columnName: id_tmp_char
+
+  - changeSet:
+      id: 13-1
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        sqlCheck:
+          expectedResult: "1"
+          sql: |
+            SELECT CASE
+              WHEN EXISTS (
+                SELECT 1
+                FROM information_schema.COLUMNS
+                WHERE TABLE_SCHEMA = DATABASE()
+                  AND TABLE_NAME = 'enterprise'
+                  AND COLUMN_NAME = 'id'
+                  AND DATA_TYPE = 'binary'
+              )
+              OR EXISTS (
+                SELECT 1
+                FROM information_schema.COLUMNS
+                WHERE TABLE_SCHEMA = DATABASE()
+                  AND TABLE_NAME = 'enterprise'
+                  AND COLUMN_NAME = 'id_tmp_char'
+              )
+              THEN 1 ELSE 0 END
+      changes:
+        - sql:
+            sql: |
+              DROP TABLE IF EXISTS enterprise_bad_uuid_backup;
+              DROP TABLE IF EXISTS enterprise_uuid_repair;
+
+              CREATE TABLE enterprise_uuid_repair (
+                id CHAR(36) NOT NULL,
+                nom VARCHAR(255),
+                email VARCHAR(255),
+                telephone VARCHAR(100),
+                statut VARCHAR(50),
+                created_at DATETIME,
+                PRIMARY KEY (id)
+              );
+
+              INSERT INTO enterprise_uuid_repair (id, nom, email, telephone, statut, created_at)
+              SELECT
+                CASE
+                  WHEN LENGTH(id) = 16 THEN BIN_TO_UUID(CAST(id AS BINARY(16)))
+                  ELSE CAST(id AS CHAR(36))
+                END,
+                nom,
+                email,
+                telephone,
+                statut,
+                created_at
+              FROM enterprise;
+
+              RENAME TABLE enterprise TO enterprise_bad_uuid_backup,
+                           enterprise_uuid_repair TO enterprise;
+
+  - changeSet:
+      id: 13-2
+      author: dev
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        and:
+          - tableExists:
+              tableName: users
+          - columnExists:
+              tableName: users
+              columnName: enterprise_id
+      changes:
+        - sql:
+            sql: |
+              UPDATE users
+              SET enterprise_id = INSERT(
+                                  INSERT(
+                                      INSERT(
+                                          INSERT(LOWER(SUBSTRING(enterprise_id, 3)), 9, 0, '-'),
+                                      14, 0, '-'),
+                                  19, 0, '-'),
+                              24, 0, '-')
+              WHERE enterprise_id REGEXP '^0x[0-9A-Fa-f]{32}$';

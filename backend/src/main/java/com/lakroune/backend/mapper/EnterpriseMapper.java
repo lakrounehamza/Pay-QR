@@ -9,6 +9,6 @@ import com.lakroune.backend.entity.Enterprise;
 @Mapper(componentModel = "spring")
 public interface EnterpriseMapper {
 
-    @Mapping(target = "totalEmployees", expression = "java(entity.getUsers() == null ? 0 : entity.getUsers().size())")
+    @Mapping(target = "totalEmployees", expression = "java(entity != null && entity.getUsers() != null ? entity.getUsers().size() : 0)")
     EnterpriseResponse toResponse(Enterprise entity);
 }

@@ -17,9 +17,20 @@ public class BlacklistedRefAccountServiceImpl  implements IBlacklistedRefAccount
         String ref ="";
         do {
             ref = generateRef();
-        }while (blacklistedRefAccountRepository.existsByRefAccount(ref));
-        blacklistedRefAccountRepository.save(BlacklistedRefAccount.builder().refAccount(ref).build());
-        return  ref;
+        } while (blacklistedRefAccountRepository.existsByRefAccount(ref));
+
+        BlacklistedRefAccount blacklistedRefAccount = BlacklistedRefAccount.builder()
+                .refAccount(ref)
+                .build();
+
+        try {
+            blacklistedRefAccountRepository.save(blacklistedRefAccount);
+        } catch (Exception e) {
+            e.printStackTrace();  // Affiche la vraie cause
+            System.out.println("Cause réelle : " + e.getCause());
+        }
+
+        return ref;
     }
 
     private String generateRef(){
