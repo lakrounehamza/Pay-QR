@@ -33,6 +33,12 @@ services:
         sync: false
       - key: SERVER_PORT
         value: 8080
+      - key: OLLAMA_URL
+        sync: false
+      - key: OLLAMA_MODEL
+        value: llava:7b
+      - key: OLLAMA_ENABLED
+        value: true
 
 databases:
   - name: pay-qr-db
